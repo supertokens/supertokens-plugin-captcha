@@ -35,7 +35,7 @@ export const init = ({ key }: { key: string }): SuperTokensPlugin => {
                   captchaTimedOut = true;
                 }, 10 * 1000);
 
-                // @ts-ignore
+                // @ts-expect-error plm
                 window.grecaptcha.ready(function () {
                   clearTimeout(captchaTimeoutHandle);
 
@@ -45,16 +45,29 @@ export const init = ({ key }: { key: string }): SuperTokensPlugin => {
                   }
 
                   console.log("captcha ready");
-                  // @ts-ignore
+                  // @ts-expect-error plm
                   window.grecaptcha
-                    .execute(key, {
+                    .execute("6Lc54coqAAAAAP_61uZTO4DiDxiQ_pWjccGC1_QC", {
                       action: "submit",
                     })
                     .then((token: string) => {
-                      console.log("captcha token", token);
                       return originalImplementation.signIn({
                         ...input,
-                        userContext: { ...input.userContext, captcha: token },
+                        options: {
+                          preAPIHook: async (input) => {
+                            try {
+                              const payload = JSON.parse(
+                                input.requestInit.body as string
+                              );
+                              payload.captcha = token;
+                              input.requestInit.body = JSON.stringify(payload);
+                              return input;
+                            } catch (error) {
+                              console.log("error", error);
+                              return input;
+                            }
+                          },
+                        },
                       });
                     })
                     .then(resolve)

@@ -297,27 +297,51 @@ var init = function (_a) {
                   reject(new Error("Could not load CAPTCHA"));
                   captchaTimedOut = true;
                 }, 10 * 1000);
-                // @ts-ignore
+                // @ts-expect-error plm
                 window.grecaptcha.ready(function () {
+                  var _this = this;
                   clearTimeout(captchaTimeoutHandle);
                   if (captchaTimedOut) {
                     console.log("captcha recovered from timeout");
                     return;
                   }
                   console.log("captcha ready");
-                  // @ts-ignore
+                  // @ts-expect-error plm
                   window.grecaptcha
-                    .execute(key, {
+                    .execute("6Lc54coqAAAAAP_61uZTO4DiDxiQ_pWjccGC1_QC", {
                       action: "submit",
                     })
                     .then(function (token) {
-                      console.log("captcha token", token);
                       return originalImplementation.signIn(
                         __assign(__assign({}, input), {
-                          userContext: __assign(
-                            __assign({}, input.userContext),
-                            { captcha: token }
-                          ),
+                          options: {
+                            preAPIHook: function (input) {
+                              return __awaiter(
+                                _this,
+                                void 0,
+                                void 0,
+                                function () {
+                                  var payload;
+                                  return __generator(this, function (_a) {
+                                    try {
+                                      payload = JSON.parse(
+                                        input.requestInit.body
+                                      );
+                                      payload.captcha = token;
+                                      input.requestInit.body = JSON.stringify(
+                                        payload
+                                      );
+                                      return [2 /*return*/, input];
+                                    } catch (error) {
+                                      console.log("error", error);
+                                      return [2 /*return*/, input];
+                                    }
+                                    return [2 /*return*/];
+                                  });
+                                }
+                              );
+                            },
+                          },
                         })
                       );
                     })
