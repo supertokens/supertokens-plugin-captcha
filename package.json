@@ -1,0 +1,93 @@
+{
+  "name": "supertokens-plugin-captcha",
+  "version": "0.0.1",
+  "description": "SuperTokens plugin for adding CAPTCHA support.",
+  "main": "index.js",
+  "scripts": {
+    "test": "TEST_MODE=testing npx mocha --node-option no-experimental-fetch -r test/fetch-polyfill.mjs --timeout 500000",
+    "test-exports": "./test/testExports.sh",
+    "build-check": "cd lib && npx tsc -p tsconfig.json --noEmit && cd ../test/with-typescript && npm run build",
+    "build:backend": "cd backend/lib && rm -rf build && npx tsc -p tsconfig.json",
+    "build:frontend": "rm -rf frontend/lib/build && npx rollup -c frontend/lib/rollup.config.mjs",
+    "build": "npm run build:backend && npm run build:frontend",
+    "pretty": "npx pretty-quick .",
+    "build-pretty": "npm run build && npm run pretty && npm run pretty",
+    "pretty-check": "npx pretty-quick --check ."
+  },
+  "keywords": [],
+  "exports": {
+    ".": {
+      "types": "./index.d.ts",
+      "default": "./index.js"
+    },
+    "./index": {
+      "types": "./index.d.ts",
+      "default": "./index.js"
+    },
+    "./index.js": {
+      "types": "./index.d.ts",
+      "default": "./index.js"
+    },
+    "./backend": {
+      "types": "./backend/index.d.ts",
+      "default": "./backend/index.js"
+    },
+    "./backend/index": {
+      "types": "./backend/index.d.ts",
+      "default": "./backend/index.js"
+    },
+    "./backend/index.js": {
+      "types": "./backend/index.d.ts",
+      "default": "./backend/index.js"
+    },
+    "./frontend": {
+      "types": "./frontend/index.d.ts",
+      "default": "./frontend/index.js"
+    },
+    "./frontend/index": {
+      "types": "./frontend/index.d.ts",
+      "default": "./frontend/index.js"
+    },
+    "./frontend/index.js": {
+      "types": "./frontend/index.d.ts",
+      "default": "./frontend/index.js"
+    }
+  },
+  "license": "Apache-2.0",
+  "dependencies": {
+    "supertokens-auth-react": "github:supertokens/supertokens-auth-react#feat/plugin/experiment",
+    "supertokens-node": "github:supertokens/supertokens-node#feat/plugin/experiment"
+  },
+  "peerDependencies": {
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1"
+  },
+  "devDependencies": {
+    "@rollup/plugin-commonjs": "^23.0.3",
+    "@rollup/plugin-json": "^5.0.0",
+    "@rollup/plugin-multi-entry": "^6.0.0",
+    "@rollup/plugin-node-resolve": "^15.0.1",
+    "@rollup/pluginutils": "^5.0.2",
+    "@types/node": "14.11.10",
+    "@types/react": "^17.0.20",
+    "mocha": "^10.2.0",
+    "postcss": "^8.4.19",
+    "postcss-import": "^15.0.0",
+    "postcss-preset-env": "^7.8.3",
+    "prettier": "2.0.5",
+    "pretty-quick": "^3.1.1",
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1",
+    "rollup": "^3.1.0",
+    "rollup-plugin-import-css": "^3.1.0",
+    "rollup-plugin-peer-deps-external": "^2.2.4",
+    "rollup-plugin-typescript2": "^0.34.1",
+    "rollup-plugin-visualizer": "^5.8.3",
+    "rollup-pluginutils": "^2.8.2",
+    "sinon": "^14.0.0",
+    "typescript": "^5.7.3"
+  },
+  "browser": {
+    "fs": false
+  }
+}
