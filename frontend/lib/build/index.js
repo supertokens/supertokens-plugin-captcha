@@ -1,8 +1,8 @@
-'use strict';
+"use strict";
 
-Object.defineProperty(exports, '__esModule', { value: true });
+Object.defineProperty(exports, "__esModule", { value: true });
 
-var jsxRuntime = require('react/jsx-runtime');
+var jsxRuntime = require("react/jsx-runtime");
 
 var PLUGIN_ID = "supertokens-plugin-captcha";
 
@@ -22,53 +22,67 @@ PERFORMANCE OF THIS SOFTWARE.
 ***************************************************************************** */
 /* global Reflect, Promise, SuppressedError, Symbol, Iterator */
 
-
-var __assign = function() {
-    __assign = Object.assign || function __assign(t) {
-        for (var s, i = 1, n = arguments.length; i < n; i++) {
-            s = arguments[i];
-            for (var p in s) if (Object.prototype.hasOwnProperty.call(s, p)) t[p] = s[p];
-        }
-        return t;
+var __assign = function () {
+  __assign =
+    Object.assign ||
+    function __assign(t) {
+      for (var s, i = 1, n = arguments.length; i < n; i++) {
+        s = arguments[i];
+        for (var p in s)
+          if (Object.prototype.hasOwnProperty.call(s, p)) t[p] = s[p];
+      }
+      return t;
     };
-    return __assign.apply(this, arguments);
+  return __assign.apply(this, arguments);
 };
 
 function __rest(s, e) {
-    var t = {};
-    for (var p in s) if (Object.prototype.hasOwnProperty.call(s, p) && e.indexOf(p) < 0)
-        t[p] = s[p];
-    if (s != null && typeof Object.getOwnPropertySymbols === "function")
-        for (var i = 0, p = Object.getOwnPropertySymbols(s); i < p.length; i++) {
-            if (e.indexOf(p[i]) < 0 && Object.prototype.propertyIsEnumerable.call(s, p[i]))
-                t[p[i]] = s[p[i]];
-        }
-    return t;
+  var t = {};
+  for (var p in s)
+    if (Object.prototype.hasOwnProperty.call(s, p) && e.indexOf(p) < 0)
+      t[p] = s[p];
+  if (s != null && typeof Object.getOwnPropertySymbols === "function")
+    for (var i = 0, p = Object.getOwnPropertySymbols(s); i < p.length; i++) {
+      if (
+        e.indexOf(p[i]) < 0 &&
+        Object.prototype.propertyIsEnumerable.call(s, p[i])
+      )
+        t[p[i]] = s[p[i]];
+    }
+  return t;
 }
 
-typeof SuppressedError === "function" ? SuppressedError : function (error, suppressed, message) {
-    var e = new Error(message);
-    return e.name = "SuppressedError", e.error = error, e.suppressed = suppressed, e;
-};
+typeof SuppressedError === "function"
+  ? SuppressedError
+  : function (error, suppressed, message) {
+      var e = new Error(message);
+      return (
+        (e.name = "SuppressedError"),
+        (e.error = error),
+        (e.suppressed = suppressed),
+        e
+      );
+    };
 
 var EmailPasswordSignInForm = function (_a) {
-    var DefaultComponent = _a.DefaultComponent, props = __rest(_a, ["DefaultComponent"]);
-    console.log("EmailPasswordSignInForm");
-    return jsxRuntime.jsx(DefaultComponent, __assign({}, props));
+  var DefaultComponent = _a.DefaultComponent,
+    props = __rest(_a, ["DefaultComponent"]);
+  console.log("overrides/EmailPasswordSignInForm");
+  return jsxRuntime.jsx(DefaultComponent, __assign({}, props));
 };
 
 // todo: feedback: need some util for calling the custom plugin api
 var init = function (_) {
-    return {
-        id: PLUGIN_ID,
-        overrideMap: {
-            emailpassword: {
-                components: {
-                    EmailPasswordSignInForm_Override: EmailPasswordSignInForm,
-                },
-            },
+  return {
+    id: PLUGIN_ID,
+    overrideMap: {
+      emailpassword: {
+        components: {
+          EmailPasswordSignInForm_Override: EmailPasswordSignInForm,
         },
-    };
+      },
+    },
+  };
 };
 
 var index = { init: init };

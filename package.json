@@ -11,7 +11,7 @@
     "build:frontend": "rm -rf frontend/lib/build && npx rollup -c frontend/lib/rollup.config.mjs",
     "build": "npm run build:backend && npm run build:frontend",
     "pretty": "npx pretty-quick .",
-    "build-pretty": "npm run build && npm run pretty && npm run pretty",
+    "build-pretty": "npm run build && npm run pretty",
     "pretty-check": "npx pretty-quick --check ."
   },
   "keywords": [],
