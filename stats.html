@@ -6957,107 +6957,173 @@
             {
               name: "index.js",
               children: [
+                { uid: "b7a84a98-1", name: "\u0000tslib.js" },
                 {
                   name: "frontend/lib/ts",
                   children: [
-                    { uid: "66098946-1", name: "config.ts" },
+                    { uid: "b7a84a98-3", name: "config.ts" },
+                    { name: "utils/loadScript.ts", uid: "b7a84a98-5" },
                     {
                       name: "components/overrides/EmailPasswordSignInForm.tsx",
-                      uid: "66098946-5",
+                      uid: "b7a84a98-7",
                     },
-                    { uid: "66098946-7", name: "plugin.ts" },
-                    { uid: "66098946-9", name: "index.ts" },
+                    { uid: "b7a84a98-9", name: "plugin.ts" },
+                    { uid: "b7a84a98-11", name: "index.ts" },
                   ],
                 },
-                { uid: "66098946-3", name: "\u0000tslib.js" },
               ],
             },
           ],
           isRoot: true,
         },
         nodeParts: {
-          "66098946-1": {
+          "b7a84a98-1": {
+            renderedLength: 4495,
+            gzipLength: 0,
+            brotliLength: 0,
+            metaUid: "b7a84a98-0",
+          },
+          "b7a84a98-3": {
             renderedLength: 45,
             gzipLength: 0,
             brotliLength: 0,
-            metaUid: "66098946-0",
+            metaUid: "b7a84a98-2",
           },
-          "66098946-3": {
-            renderedLength: 1942,
+          "b7a84a98-5": {
+            renderedLength: 388,
             gzipLength: 0,
             brotliLength: 0,
-            metaUid: "66098946-2",
+            metaUid: "b7a84a98-4",
           },
-          "66098946-5": {
-            renderedLength: 258,
+          "b7a84a98-7": {
+            renderedLength: 1287,
             gzipLength: 0,
             brotliLength: 0,
-            metaUid: "66098946-4",
+            metaUid: "b7a84a98-6",
           },
-          "66098946-7": {
-            renderedLength: 345,
+          "b7a84a98-9": {
+            renderedLength: 2925,
             gzipLength: 0,
             brotliLength: 0,
-            metaUid: "66098946-6",
+            metaUid: "b7a84a98-8",
           },
-          "66098946-9": {
+          "b7a84a98-11": {
             renderedLength: 27,
             gzipLength: 0,
             brotliLength: 0,
-            metaUid: "66098946-8",
+            metaUid: "b7a84a98-10",
           },
         },
         nodeMetas: {
-          "66098946-0": {
-            id: "/frontend/lib/ts/config.ts",
-            moduleParts: { "index.js": "66098946-1" },
-            imported: [],
-            importedBy: [{ uid: "66098946-8" }, { uid: "66098946-6" }],
-          },
-          "66098946-2": {
+          "b7a84a98-0": {
             id: "\u0000tslib.js",
-            moduleParts: { "index.js": "66098946-3" },
+            moduleParts: { "index.js": "b7a84a98-1" },
             imported: [],
-            importedBy: [{ uid: "66098946-4" }],
+            importedBy: [
+              { uid: "b7a84a98-8" },
+              { uid: "b7a84a98-6" },
+              { uid: "b7a84a98-17" },
+            ],
           },
-          "66098946-4": {
+          "b7a84a98-2": {
+            id: "/frontend/lib/ts/config.ts",
+            moduleParts: { "index.js": "b7a84a98-3" },
+            imported: [],
+            importedBy: [{ uid: "b7a84a98-10" }, { uid: "b7a84a98-8" }],
+          },
+          "b7a84a98-4": {
+            id: "/frontend/lib/ts/utils/loadScript.ts",
+            moduleParts: { "index.js": "b7a84a98-5" },
+            imported: [],
+            importedBy: [{ uid: "b7a84a98-15" }],
+          },
+          "b7a84a98-6": {
             id:
               "/frontend/lib/ts/components/overrides/EmailPasswordSignInForm.tsx",
-            moduleParts: { "index.js": "66098946-5" },
-            imported: [{ uid: "66098946-2" }, { uid: "66098946-12" }],
-            importedBy: [{ uid: "66098946-11" }],
+            moduleParts: { "index.js": "b7a84a98-7" },
+            imported: [
+              { uid: "b7a84a98-0" },
+              { uid: "b7a84a98-14" },
+              { uid: "b7a84a98-15" },
+              { uid: "b7a84a98-16" },
+            ],
+            importedBy: [{ uid: "b7a84a98-13" }],
           },
-          "66098946-6": {
+          "b7a84a98-8": {
             id: "/frontend/lib/ts/plugin.ts",
-            moduleParts: { "index.js": "66098946-7" },
-            imported: [{ uid: "66098946-0" }, { uid: "66098946-10" }],
-            importedBy: [{ uid: "66098946-8" }],
+            moduleParts: { "index.js": "b7a84a98-9" },
+            imported: [
+              { uid: "b7a84a98-0" },
+              { uid: "b7a84a98-2" },
+              { uid: "b7a84a98-12" },
+            ],
+            importedBy: [{ uid: "b7a84a98-10" }],
           },
-          "66098946-8": {
+          "b7a84a98-10": {
             id: "/frontend/lib/ts/index.ts",
-            moduleParts: { "index.js": "66098946-9" },
-            imported: [{ uid: "66098946-6" }, { uid: "66098946-0" }],
+            moduleParts: { "index.js": "b7a84a98-11" },
+            imported: [{ uid: "b7a84a98-8" }, { uid: "b7a84a98-2" }],
             importedBy: [],
             isEntry: true,
           },
-          "66098946-10": {
+          "b7a84a98-12": {
             id: "/frontend/lib/ts/components/index.ts",
             moduleParts: {},
-            imported: [{ uid: "66098946-11" }],
-            importedBy: [{ uid: "66098946-6" }],
+            imported: [{ uid: "b7a84a98-13" }],
+            importedBy: [{ uid: "b7a84a98-8" }],
           },
-          "66098946-11": {
+          "b7a84a98-13": {
             id: "/frontend/lib/ts/components/overrides/index.ts",
             moduleParts: {},
-            imported: [{ uid: "66098946-4" }],
-            importedBy: [{ uid: "66098946-10" }],
+            imported: [{ uid: "b7a84a98-6" }],
+            importedBy: [{ uid: "b7a84a98-12" }],
           },
-          "66098946-12": {
+          "b7a84a98-14": {
             id: "react/jsx-runtime",
             moduleParts: {},
             imported: [],
-            importedBy: [{ uid: "66098946-4" }],
+            importedBy: [{ uid: "b7a84a98-6" }, { uid: "b7a84a98-19" }],
             isExternal: true,
+          },
+          "b7a84a98-15": {
+            id: "/frontend/lib/ts/utils/index.ts",
+            moduleParts: {},
+            imported: [
+              { uid: "b7a84a98-17" },
+              { uid: "b7a84a98-18" },
+              { uid: "b7a84a98-19" },
+              { uid: "b7a84a98-4" },
+            ],
+            importedBy: [{ uid: "b7a84a98-6" }],
+          },
+          "b7a84a98-16": {
+            id: "react",
+            moduleParts: {},
+            imported: [],
+            importedBy: [
+              { uid: "b7a84a98-6" },
+              { uid: "b7a84a98-17" },
+              { uid: "b7a84a98-19" },
+            ],
+            isExternal: true,
+          },
+          "b7a84a98-17": {
+            id: "/frontend/lib/ts/utils/querier.ts",
+            moduleParts: {},
+            imported: [{ uid: "b7a84a98-0" }, { uid: "b7a84a98-16" }],
+            importedBy: [{ uid: "b7a84a98-15" }],
+          },
+          "b7a84a98-18": {
+            id: "/frontend/lib/ts/utils/getErrorMessage.ts",
+            moduleParts: {},
+            imported: [],
+            importedBy: [{ uid: "b7a84a98-15" }],
+          },
+          "b7a84a98-19": {
+            id: "/frontend/lib/ts/utils/ThemeBase.tsx",
+            moduleParts: {},
+            imported: [{ uid: "b7a84a98-14" }, { uid: "b7a84a98-16" }],
+            importedBy: [{ uid: "b7a84a98-15" }],
           },
         },
         env: { rollup: "3.29.4" },
