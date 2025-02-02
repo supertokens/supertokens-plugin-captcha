@@ -4,9 +4,7 @@ import { EmailPasswordSignInForm } from "./components";
 
 // todo: feedback: need some util for calling the custom plugin api
 
-export const init = ({
-  apiDomain,
-}: {
+export const init = (_: {
   apiDomain: string;
   websiteDomain: string;
 }): SuperTokensPlugin => {

@@ -1,1 +1,1 @@
-export declare const PLUGIN_ID = "supertokens-plugin-user-banning";
+export declare const PLUGIN_ID = "supertokens-plugin-captcha";

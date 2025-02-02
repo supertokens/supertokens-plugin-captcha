@@ -1,2 +1,3 @@
 import { SuperTokensPlugin } from "supertokens-node/types";
-export declare const init: () => SuperTokensPlugin;
+import { SuperTokensPluginCaptchaConfig } from "./types";
+export declare const init: (config: SuperTokensPluginCaptchaConfig) => SuperTokensPlugin;
