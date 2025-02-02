@@ -4,5 +4,6 @@ export const EmailPasswordSignInForm: ComponentOverrideMap["EmailPasswordSignInF
   DefaultComponent,
   ...props
 }) => {
+  console.log("EmailPasswordSignInForm");
   return <DefaultComponent {...props} />;
 };

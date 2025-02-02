@@ -53,6 +53,7 @@ typeof SuppressedError === "function" ? SuppressedError : function (error, suppr
 
 var EmailPasswordSignInForm = function (_a) {
     var DefaultComponent = _a.DefaultComponent, props = __rest(_a, ["DefaultComponent"]);
+    console.log("EmailPasswordSignInForm");
     return jsxRuntime.jsx(DefaultComponent, __assign({}, props));
 };
 
