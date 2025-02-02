@@ -200,13 +200,21 @@ typeof SuppressedError === "function"
 
 var PLUGIN_ID = "supertokens-plugin-captcha";
 
-var loadScript = function (url) {
+var loadedScripts = new Set();
+var loadScript = function (url, _a) {
+  var _b = _a === void 0 ? {} : _a,
+    _c = _b.once,
+    once = _c === void 0 ? true : _c;
   return new Promise(function (resolve, reject) {
+    if (once && loadedScripts.has(url)) {
+      return resolve();
+    }
     var script = document.createElement("script");
     script.type = "application/javascript";
     script.src = url;
     script.onload = function () {
-      return resolve();
+      loadedScripts.add(url);
+      resolve();
     };
     script.onerror = function (e) {
       return reject(e);
