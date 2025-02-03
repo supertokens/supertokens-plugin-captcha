@@ -35,11 +35,7 @@ export const init = (
                 }
 
                 const result = await axios.post(
-                  "https://www.google.com/recaptcha/api/siteverify",
-                  {
-                    secret: config.reCAPTCHAv3?.secretKey,
-                    response: captcha,
-                  }
+                  `https://www.google.com/recaptcha/api/siteverify?secret=${config.reCAPTCHAv3?.secretKey}&response=${captcha}`
                 );
 
                 console.log(result.data);

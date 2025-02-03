@@ -34,14 +34,12 @@ const init = (config) => {
                   };
                 }
                 const result = await axios_1.default.post(
-                  "https://www.google.com/recaptcha/api/siteverify",
-                  {
-                    secret:
-                      (_a = config.reCAPTCHAv3) === null || _a === void 0
-                        ? void 0
-                        : _a.secretKey,
-                    response: captcha,
-                  }
+                  `https://www.google.com/recaptcha/api/siteverify?secret=${
+                    (_a = config.reCAPTCHAv3) === null || _a === void 0
+                      ? void 0
+                      : _a.secretKey
+                  }&response=${captcha}`,
+                  {}
                 );
                 console.log(result.data);
                 if (result.data.success) {
