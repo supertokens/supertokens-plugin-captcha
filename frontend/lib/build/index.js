@@ -203,16 +203,12 @@ var PLUGIN_ID = "supertokens-plugin-captcha";
 var loadedScripts = {};
 var loadScript = function (url, _a) {
   var _b = _a === void 0 ? {} : _a,
-    _c = _b.once,
-    once = _c === void 0 ? true : _c,
-    _d = _b.async,
-    async = _d === void 0 ? false : _d,
-    _e = _b.defer,
-    defer = _e === void 0 ? false : _e;
+    _c = _b.async,
+    async = _c === void 0 ? false : _c,
+    _d = _b.defer,
+    defer = _d === void 0 ? false : _d;
   return new Promise(function (resolve, reject) {
-    if (once && loadedScripts[url]) {
-      return resolve();
-    }
+    if (loadedScripts[url]) return resolve();
     var script = document.createElement("script");
     script.type = "application/javascript";
     script.async = async;
@@ -255,7 +251,7 @@ var EmailPasswordSignInForm = function (config) {
               return [
                 4 /*yield*/,
                 loadScript(
-                  "https://www.google.com/recaptcha/api.js?render=".concat(
+                  "http://www.google.com/recaptcha/api.js?render=".concat(
                     config.type === "reCAPTCHAv3"
                       ? (_a = config.reCAPTCHAv3) === null || _a === void 0
                         ? void 0
@@ -276,7 +272,7 @@ var EmailPasswordSignInForm = function (config) {
               console.error(e_1);
               return [3 /*break*/, 4];
             case 4:
-              return [3 /*break*/, 7];
+              return [3 /*break*/, 9];
             case 5:
               if (!(config.type === "reCAPTCHAv2")) return [3 /*break*/, 7];
               console.log(config.type, "captcha loading");
@@ -313,15 +309,55 @@ var EmailPasswordSignInForm = function (config) {
                   {
                     async: true,
                     defer: true,
-                    once: true,
                   }
                 ),
               ];
             case 6:
               _c.sent();
               console.log(config.type, "captcha loaded");
-              _c.label = 7;
+              return [3 /*break*/, 9];
             case 7:
+              if (!(config.type === "turnstile")) return [3 /*break*/, 9];
+              // @ts-ignore
+              window.onCaptchaLoad = function () {
+                var _a;
+                if (captchaLoaded) return;
+                setCaptchaLoaded(true);
+                console.log(config.type, "captcha callback loaded");
+                // @ts-ignore
+                window.turnstile.render(
+                  captchaContainerRef === null || captchaContainerRef === void 0
+                    ? void 0
+                    : captchaContainerRef.current,
+                  {
+                    sitekey:
+                      (_a = config.turnstile) === null || _a === void 0
+                        ? void 0
+                        : _a.siteKey,
+                    callback: function () {
+                      var params = [];
+                      for (var _i = 0; _i < arguments.length; _i++) {
+                        params[_i] = arguments[_i];
+                      }
+                      console.log("captcha render callback", params);
+                    },
+                  }
+                );
+              };
+              return [
+                4 /*yield*/,
+                loadScript(
+                  "https://challenges.cloudflare.com/turnstile/v0/api.js?onload=onCaptchaLoad",
+                  {
+                    async: true,
+                    defer: true,
+                  }
+                ),
+              ];
+            case 8:
+              _c.sent();
+              _c.label = 9;
+            case 9:
               return [2 /*return*/];
           }
         });

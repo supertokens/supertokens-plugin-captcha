@@ -21,7 +21,7 @@ export const EmailPasswordSignInForm = (
     if (config.type === "reCAPTCHAv3") {
       try {
         await loadScript(
-          `https://www.google.com/recaptcha/api.js?render=${
+          `http://www.google.com/recaptcha/api.js?render=${
             config.type === "reCAPTCHAv3"
               ? config.reCAPTCHAv3?.siteKey
               : config.reCAPTCHAv2?.siteKey
@@ -53,10 +53,32 @@ export const EmailPasswordSignInForm = (
         {
           async: true,
           defer: true,
-          once: true,
         }
       );
       console.log(config.type, "captcha loaded");
+    } else if (config.type === "turnstile") {
+      // @ts-ignore
+      window.onCaptchaLoad = () => {
+        if (captchaLoaded) return;
+
+        setCaptchaLoaded(true);
+        console.log(config.type, "captcha callback loaded");
+        // @ts-ignore
+        window.turnstile.render(captchaContainerRef?.current, {
+          sitekey: config.turnstile?.siteKey,
+          callback: (...params: any[]) => {
+            console.log("captcha render callback", params);
+          },
+        });
+      };
+
+      await loadScript(
+        "https://challenges.cloudflare.com/turnstile/v0/api.js?onload=onCaptchaLoad",
+        {
+          async: true,
+          defer: true,
+        }
+      );
     }
   }, []);
 
