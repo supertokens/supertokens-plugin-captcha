@@ -56,6 +56,7 @@ export const EmailPasswordSignInForm = (
   return (
     <DefaultComponent
       {...props}
+      footer={<div>plm</div>}
       config={{
         ...props.config,
         override: {

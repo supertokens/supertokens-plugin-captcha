@@ -311,6 +311,7 @@ var EmailPasswordSignInForm = function (config) {
     return jsxRuntime.jsx(
       DefaultComponent,
       __assign({}, props, {
+        footer: jsxRuntime.jsx("div", { children: "plm" }),
         config: __assign(__assign({}, props.config), {
           override: {
             functions: function (originalImplementation) {
