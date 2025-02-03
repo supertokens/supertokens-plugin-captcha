@@ -36,6 +36,13 @@ export const EmailPasswordSignInForm = (
       window.onCaptchaLoad = () => {
         setCaptchaLoaded(true);
         console.log(config.type, "captcha callback loaded");
+        // @ts-ignore
+        window.grecaptcha.render("captcha-container", {
+          sitekey: config.reCAPTCHAv2?.siteKey,
+          callback: (...params: any[]) => {
+            console.log("captcha render callback", params);
+          },
+        });
       };
       await loadScript(
         "https://www.google.com/recaptcha/api.js?onload=onCaptchaLoad&render=explicit",
@@ -56,7 +63,7 @@ export const EmailPasswordSignInForm = (
   return (
     <DefaultComponent
       {...props}
-      footer={<div>plm</div>}
+      footer={<div id="captcha-container"></div>}
       config={{
         ...props.config,
         override: {
