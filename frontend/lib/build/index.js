@@ -231,6 +231,7 @@ var loadScript = function (url, _a) {
 };
 
 var EmailPasswordSignInForm = function (config) {
+  console.log("EmailPasswordSignInForm init", config);
   return function (_a) {
     var DefaultComponent = _a.DefaultComponent,
       props = __rest(_a, ["DefaultComponent"]);
