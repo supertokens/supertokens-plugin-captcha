@@ -36,6 +36,8 @@ export const EmailPasswordSignInForm = (
       console.log(config.type, "captcha loading");
       // @ts-ignore
       window.onCaptchaLoad = () => {
+        if (captchaLoaded) return;
+
         setCaptchaLoaded(true);
         console.log(config.type, "captcha callback loaded");
         // @ts-ignore
@@ -66,20 +68,6 @@ export const EmailPasswordSignInForm = (
     <DefaultComponent
       {...props}
       footer={<div id="captcha-container" ref={captchaContainerRef}></div>}
-      config={{
-        ...props.config,
-        override: {
-          functions: (originalImplementation) => {
-            return {
-              ...originalImplementation,
-              signIn: async (input) => {
-                console.log(config.type, "signIn", input);
-                return originalImplementation.signIn(input);
-              },
-            };
-          },
-        },
-      }}
     />
   );
 };

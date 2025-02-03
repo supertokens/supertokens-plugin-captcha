@@ -283,6 +283,7 @@ var EmailPasswordSignInForm = function (config) {
               // @ts-ignore
               window.onCaptchaLoad = function () {
                 var _a;
+                if (captchaLoaded) return;
                 setCaptchaLoaded(true);
                 console.log(config.type, "captcha callback loaded");
                 // @ts-ignore
@@ -335,25 +336,6 @@ var EmailPasswordSignInForm = function (config) {
         footer: jsxRuntime.jsx("div", {
           id: "captcha-container",
           ref: captchaContainerRef,
-        }),
-        config: __assign(__assign({}, props.config), {
-          override: {
-            functions: function (originalImplementation) {
-              return __assign(__assign({}, originalImplementation), {
-                signIn: function (input) {
-                  return __awaiter(void 0, void 0, void 0, function () {
-                    return __generator(this, function (_a) {
-                      console.log(config.type, "signIn", input);
-                      return [
-                        2 /*return*/,
-                        originalImplementation.signIn(input),
-                      ];
-                    });
-                  });
-                },
-              });
-            },
-          },
         }),
       })
     );
