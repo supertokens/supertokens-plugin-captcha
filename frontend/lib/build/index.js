@@ -339,24 +339,19 @@ var EmailPasswordSignInForm = function (config) {
                   return;
                 }
                 // @ts-ignore
-                window.turnstile.render(
-                  captchaContainerRef === null || captchaContainerRef === void 0
-                    ? void 0
-                    : captchaContainerRef.current,
-                  {
-                    sitekey:
-                      (_a = config.turnstile) === null || _a === void 0
-                        ? void 0
-                        : _a.siteKey,
-                    callback: function () {
-                      var params = [];
-                      for (var _i = 0; _i < arguments.length; _i++) {
-                        params[_i] = arguments[_i];
-                      }
-                      console.log("captcha render callback", params);
-                    },
-                  }
-                );
+                window.turnstile.render("#captcha-container", {
+                  sitekey:
+                    (_a = config.turnstile) === null || _a === void 0
+                      ? void 0
+                      : _a.siteKey,
+                  callback: function () {
+                    var params = [];
+                    for (var _i = 0; _i < arguments.length; _i++) {
+                      params[_i] = arguments[_i];
+                    }
+                    console.log("captcha render callback", params);
+                  },
+                });
               };
               return [
                 4 /*yield*/,

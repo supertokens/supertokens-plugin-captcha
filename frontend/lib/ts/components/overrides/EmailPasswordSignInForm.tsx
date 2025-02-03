@@ -70,7 +70,7 @@ export const EmailPasswordSignInForm = (
           }
 
           // @ts-ignore
-          window.turnstile.render(captchaContainerRef?.current, {
+          window.turnstile.render("#captcha-container", {
             sitekey: config.turnstile?.siteKey,
             callback: (...params: any[]) => {
               console.log("captcha render callback", params);
