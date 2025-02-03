@@ -384,6 +384,15 @@ var EmailPasswordSignInForm = function (config) {
     return jsxRuntime.jsx(
       DefaultComponent,
       __assign({}, props, {
+        recipeImplementation: __assign(
+          __assign({}, props.recipeImplementation),
+          {
+            signIn: function (input) {
+              console.log("signIn", input);
+              return props.recipeImplementation.signIn(input);
+            },
+          }
+        ),
         footer: jsxRuntime.jsx(CaptchaContainer, { _ref: captchaContainerRef }),
       })
     );

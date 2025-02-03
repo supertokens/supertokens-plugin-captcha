@@ -96,6 +96,13 @@ export const EmailPasswordSignInForm = (
     return (
       <DefaultComponent
         {...props}
+        recipeImplementation={{
+          ...props.recipeImplementation,
+          signIn: (input) => {
+            console.log("signIn", input);
+            return props.recipeImplementation.signIn(input);
+          },
+        }}
         footer={<CaptchaContainer _ref={captchaContainerRef} />}
       />
     );
