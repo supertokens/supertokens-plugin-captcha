@@ -324,6 +324,15 @@ var EmailPasswordSignInForm = function (config) {
                 if (captchaLoaded) return;
                 setCaptchaLoaded(true);
                 console.log(config.type, "captcha callback loaded");
+                if (
+                  !(captchaContainerRef === null ||
+                  captchaContainerRef === void 0
+                    ? void 0
+                    : captchaContainerRef.current)
+                ) {
+                  console.log(config.type, "captcha container not found");
+                  return;
+                }
                 // @ts-ignore
                 window.turnstile.render(
                   captchaContainerRef === null || captchaContainerRef === void 0

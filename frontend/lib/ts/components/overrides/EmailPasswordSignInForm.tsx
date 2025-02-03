@@ -63,6 +63,11 @@ export const EmailPasswordSignInForm = (
 
         setCaptchaLoaded(true);
         console.log(config.type, "captcha callback loaded");
+        if (!captchaContainerRef?.current) {
+          console.log(config.type, "captcha container not found");
+          return;
+        }
+
         // @ts-ignore
         window.turnstile.render(captchaContainerRef?.current, {
           sitekey: config.turnstile?.siteKey,
