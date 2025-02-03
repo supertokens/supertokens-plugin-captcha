@@ -45,7 +45,11 @@ export const init = (
                   );
                 } else if (config.type === "turnstile") {
                   result = await axios.post(
-                    `https://challenges.cloudflare.com/turnstile/v0/siteverify?secret=${config.turnstile?.secretKey}&response=${captcha}`
+                    `https://challenges.cloudflare.com/turnstile/v0/siteverify`,
+                    {
+                      secret: config.turnstile?.secretKey,
+                      response: captcha,
+                    }
                   );
                 } else {
                   return originalImplementation.signInPOST!(input);

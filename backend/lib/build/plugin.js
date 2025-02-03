@@ -52,11 +52,14 @@ const init = (config) => {
                   );
                 } else if (config.type === "turnstile") {
                   result = await axios_1.default.post(
-                    `https://challenges.cloudflare.com/turnstile/v0/siteverify?secret=${
-                      (_c = config.turnstile) === null || _c === void 0
-                        ? void 0
-                        : _c.secretKey
-                    }&response=${captcha}`
+                    `https://challenges.cloudflare.com/turnstile/v0/siteverify`,
+                    {
+                      secret:
+                        (_c = config.turnstile) === null || _c === void 0
+                          ? void 0
+                          : _c.secretKey,
+                      response: captcha,
+                    }
                   );
                 } else {
                   return originalImplementation.signInPOST(input);
