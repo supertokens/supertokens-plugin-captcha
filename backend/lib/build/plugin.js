@@ -23,14 +23,19 @@ const init = (config) => {
             return Object.assign(Object.assign({}, originalImplementation), {
               signInPOST: async (input) => {
                 var _a, _b, _c;
-                console.log(input);
                 const body = await input.options.req.getJSONBody();
-                console.log("body", body);
                 const captcha = "captcha" in body ? body.captcha : null;
+                const type = "captchaType" in body ? body.captchaType : null;
                 if (!captcha) {
                   return {
                     status: "GENERAL_ERROR",
                     message: "CAPTCHA verification is required",
+                  };
+                }
+                if (type !== config.type) {
+                  return {
+                    status: "GENERAL_ERROR",
+                    message: "CAPTCHA type not supported",
                   };
                 }
                 let result;
@@ -62,12 +67,15 @@ const init = (config) => {
                     }
                   );
                 } else {
-                  return originalImplementation.signInPOST(input);
+                  return {
+                    status: "GENERAL_ERROR",
+                    message: "CAPTCHA type not supported",
+                  };
                 }
-                console.log(result.data);
                 if (result.data.success) {
                   return originalImplementation.signInPOST(input);
                 } else {
+                  console.error(result.data);
                   return {
                     status: "GENERAL_ERROR",
                     message: "CAPTCHA verification failed",

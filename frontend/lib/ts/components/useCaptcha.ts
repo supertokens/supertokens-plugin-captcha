@@ -123,6 +123,7 @@ export const useCaptcha = ({
         throw new Error("Error setting CAPTCHA token");
       }
 
+      payload.captchaType = config.type;
       input.requestInit.body = JSON.stringify(payload);
       return input;
     },
