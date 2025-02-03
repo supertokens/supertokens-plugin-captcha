@@ -24,7 +24,9 @@ const init = (config) => {
               signInPOST: async (input) => {
                 var _a;
                 console.log(input);
-                const captcha = "captcha" in input ? input.captcha : null;
+                const body = await input.options.req.getJSONBody();
+                console.log("body", body);
+                const captcha = "captcha" in body ? body.captcha : null;
                 if (!captcha) {
                   return {
                     status: "GENERAL_ERROR",
