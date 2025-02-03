@@ -309,7 +309,7 @@ var EmailPasswordSignInForm = function (config) {
               return [
                 4 /*yield*/,
                 loadScript(
-                  "https://www.google.com/recaptcha/api.js?onload=onCaptchaLoad&render=explicit",
+                  "http://www.google.com/recaptcha/api.js?onload=onCaptchaLoad&render=explicit",
                   {
                     async: true,
                     defer: true,

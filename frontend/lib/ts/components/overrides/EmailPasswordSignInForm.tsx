@@ -49,7 +49,7 @@ export const EmailPasswordSignInForm = (
         });
       };
       await loadScript(
-        "https://www.google.com/recaptcha/api.js?onload=onCaptchaLoad&render=explicit",
+        "http://www.google.com/recaptcha/api.js?onload=onCaptchaLoad&render=explicit",
         {
           async: true,
           defer: true,
