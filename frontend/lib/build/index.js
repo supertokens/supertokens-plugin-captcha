@@ -207,6 +207,8 @@ var loadScript = function (url, _a) {
     async = _c === void 0 ? false : _c,
     _d = _b.defer,
     defer = _d === void 0 ? false : _d;
+  console.log("loadScript", url);
+  console.log("loadedScripts", loadedScripts);
   return new Promise(function (resolve, reject) {
     if (loadedScripts[url]) return resolve();
     var script = document.createElement("script");

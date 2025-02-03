@@ -9,6 +9,9 @@ export const loadScript = (
     defer?: boolean;
   } = {}
 ): Promise<void> => {
+  console.log("loadScript", url);
+  console.log("loadedScripts", loadedScripts);
+
   return new Promise((resolve, reject) => {
     if (loadedScripts[url]) return resolve();
 
