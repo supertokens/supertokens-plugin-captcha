@@ -113,5 +113,10 @@ const CaptchaContainer = ({
       console.log("captcha container unmounting");
     };
   }, []);
-  return <div id="captcha-container" ref={_ref}></div>;
+  return (
+    <>
+      <br />
+      <div id="captcha-container" ref={_ref}></div>
+    </>
+  );
 };

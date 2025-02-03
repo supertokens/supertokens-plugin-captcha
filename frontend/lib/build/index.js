@@ -397,7 +397,12 @@ var CaptchaContainer = function (_a) {
       console.log("captcha container unmounting");
     };
   }, []);
-  return jsxRuntime.jsx("div", { id: "captcha-container", ref: _ref });
+  return jsxRuntime.jsxs(jsxRuntime.Fragment, {
+    children: [
+      jsxRuntime.jsx("br", {}),
+      jsxRuntime.jsx("div", { id: "captcha-container", ref: _ref }),
+    ],
+  });
 };
 
 // todo: feedback need a callback for init:
