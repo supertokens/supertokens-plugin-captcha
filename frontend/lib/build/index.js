@@ -308,7 +308,7 @@ var init = function (_a) {
                   console.log("captcha ready");
                   // @ts-expect-error plm
                   window.grecaptcha
-                    .execute("6Lc54coqAAAAAP_61uZTO4DiDxiQ_pWjccGC1_QC", {
+                    .execute(key, {
                       action: "submit",
                     })
                     .then(function (token) {
