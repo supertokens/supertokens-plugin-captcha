@@ -3,5 +3,7 @@ export type SuperTokensPluginCaptchaConfig = {
   reCAPTCHAv3?: {
     secretKey: string;
   };
-  reCAPTCHAv2?: {};
+  reCAPTCHAv2?: {
+    secretKey: string;
+  };
 };

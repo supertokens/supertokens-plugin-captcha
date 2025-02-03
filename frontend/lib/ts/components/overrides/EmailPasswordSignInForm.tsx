@@ -1,22 +1,51 @@
 import { ComponentOverrideMap } from "supertokens-auth-react/lib/build/recipe/emailpassword/types";
 import { loadScript } from "../../utils";
-import { useCallback, useEffect } from "react";
+import { useCallback, useEffect, useState } from "react";
+import { SuperTokensPluginCaptchaConfig } from "../../types";
 
 export const EmailPasswordSignInForm = (
-  key: string
+  config: SuperTokensPluginCaptchaConfig
 ): ComponentOverrideMap["EmailPasswordSignInForm_Override"] => ({
   DefaultComponent,
   ...props
 }) => {
+  const [captchaLoaded, setCaptchaLoaded] = useState(false);
   console.log("overrides/EmailPasswordSignInForm");
+
+  console.log(captchaLoaded);
 
   const loadCaptcha = useCallback(async () => {
     console.log("captcha loading");
-    try {
-      await loadScript(`https://www.google.com/recaptcha/api.js?render=${key}`);
-      console.log("captcha loaded");
-    } catch (e) {
-      console.error(e);
+    if (config.type === "reCAPTCHAv3") {
+      try {
+        await loadScript(
+          `https://www.google.com/recaptcha/api.js?render=${
+            config.type === "reCAPTCHAv3"
+              ? config.reCAPTCHAv3?.siteKey
+              : config.reCAPTCHAv2?.siteKey
+          }`
+        );
+        setCaptchaLoaded(true);
+        console.log("captcha loaded");
+      } catch (e) {
+        console.error(e);
+      }
+    } else if (config.type === "reCAPTCHAv2") {
+      console.log(config.type, "captcha loading");
+      // @ts-ignore
+      window.onCaptchaLoad = () => {
+        setCaptchaLoaded(true);
+        console.log(config.type, "captcha callback loaded");
+      };
+      await loadScript(
+        "https://www.google.com/recaptcha/api.js?onload=onCaptchaLoad&render=explicit",
+        {
+          async: true,
+          defer: true,
+          once: true,
+        }
+      );
+      console.log(config.type, "captcha loaded");
     }
   }, []);
 
@@ -29,6 +58,17 @@ export const EmailPasswordSignInForm = (
       {...props}
       config={{
         ...props.config,
+        override: {
+          functions: (originalImplementation) => {
+            return {
+              ...originalImplementation,
+              signIn: async (input) => {
+                console.log(config.type, "signIn", input);
+                return originalImplementation.signIn(input);
+              },
+            };
+          },
+        },
       }}
     />
   );

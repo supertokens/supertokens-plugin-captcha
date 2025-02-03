@@ -34,15 +34,23 @@ export const init = (
                   };
                 }
 
-                const result = await axios.post(
-                  `https://www.google.com/recaptcha/api/siteverify?secret=${config.reCAPTCHAv3?.secretKey}&response=${captcha}`
-                );
+                let result;
+                if (config.type === "reCAPTCHAv3") {
+                  result = await axios.post(
+                    `https://www.google.com/recaptcha/api/siteverify?secret=${config.reCAPTCHAv3?.secretKey}&response=${captcha}`
+                  );
+                } else if (config.type === "reCAPTCHAv2") {
+                  result = await axios.post(
+                    `https://www.google.com/recaptcha/api/siteverify?secret=${config.reCAPTCHAv2?.secretKey}&response=${captcha}`
+                  );
+                } else {
+                  return originalImplementation.signInPOST!(input);
+                }
 
                 console.log(result.data);
 
                 if (result.data.success) {
-                  // @ts-ignore
-                  return originalImplementation.signInPOST(input);
+                  return originalImplementation.signInPOST!(input);
                 } else {
                   return {
                     status: "GENERAL_ERROR",

@@ -1,9 +1,9 @@
 export type SuperTokensPluginCaptchaConfig = {
   type: "reCAPTCHAv3" | "reCAPTCHAv2";
   reCAPTCHAv3?: {
-    secretKey: string;
+    siteKey: string;
   };
   reCAPTCHAv2?: {
-    secretKey: string;
+    siteKey: string;
   };
 };

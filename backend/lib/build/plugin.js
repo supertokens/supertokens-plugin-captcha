@@ -22,7 +22,7 @@ const init = (config) => {
           } else {
             return Object.assign(Object.assign({}, originalImplementation), {
               signInPOST: async (input) => {
-                var _a;
+                var _a, _b;
                 console.log(input);
                 const body = await input.options.req.getJSONBody();
                 console.log("body", body);
@@ -33,16 +33,28 @@ const init = (config) => {
                     message: "CAPTCHA verification is required",
                   };
                 }
-                const result = await axios_1.default.post(
-                  `https://www.google.com/recaptcha/api/siteverify?secret=${
-                    (_a = config.reCAPTCHAv3) === null || _a === void 0
-                      ? void 0
-                      : _a.secretKey
-                  }&response=${captcha}`
-                );
+                let result;
+                if (config.type === "reCAPTCHAv3") {
+                  result = await axios_1.default.post(
+                    `https://www.google.com/recaptcha/api/siteverify?secret=${
+                      (_a = config.reCAPTCHAv3) === null || _a === void 0
+                        ? void 0
+                        : _a.secretKey
+                    }&response=${captcha}`
+                  );
+                } else if (config.type === "reCAPTCHAv2") {
+                  result = await axios_1.default.post(
+                    `https://www.google.com/recaptcha/api/siteverify?secret=${
+                      (_b = config.reCAPTCHAv2) === null || _b === void 0
+                        ? void 0
+                        : _b.secretKey
+                    }&response=${captcha}`
+                  );
+                } else {
+                  return originalImplementation.signInPOST(input);
+                }
                 console.log(result.data);
                 if (result.data.success) {
-                  // @ts-ignore
                   return originalImplementation.signInPOST(input);
                 } else {
                   return {

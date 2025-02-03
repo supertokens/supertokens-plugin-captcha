@@ -200,59 +200,106 @@ typeof SuppressedError === "function"
 
 var PLUGIN_ID = "supertokens-plugin-captcha";
 
-var loadedScripts = new Set();
+var loadedScripts = {};
 var loadScript = function (url, _a) {
   var _b = _a === void 0 ? {} : _a,
     _c = _b.once,
-    once = _c === void 0 ? true : _c;
+    once = _c === void 0 ? true : _c,
+    _d = _b.async,
+    async = _d === void 0 ? false : _d,
+    _e = _b.defer,
+    defer = _e === void 0 ? false : _e;
   return new Promise(function (resolve, reject) {
-    if (once && loadedScripts.has(url)) {
+    if (once && loadedScripts[url]) {
       return resolve();
     }
     var script = document.createElement("script");
     script.type = "application/javascript";
+    script.async = async;
+    script.defer = defer;
     script.src = url;
     script.onload = function () {
-      loadedScripts.add(url);
+      loadedScripts[url] = true;
       resolve();
     };
     script.onerror = function (e) {
-      return reject(e);
+      delete loadedScripts[url];
+      reject(e);
     };
     document.head.appendChild(script);
   });
 };
 
-var EmailPasswordSignInForm = function (key) {
+var EmailPasswordSignInForm = function (config) {
   return function (_a) {
     var DefaultComponent = _a.DefaultComponent,
       props = __rest(_a, ["DefaultComponent"]);
+    var _b = react.useState(false),
+      captchaLoaded = _b[0],
+      setCaptchaLoaded = _b[1];
     console.log("overrides/EmailPasswordSignInForm");
+    console.log(captchaLoaded);
     var loadCaptcha = react.useCallback(function () {
       return __awaiter(void 0, void 0, void 0, function () {
         var e_1;
-        return __generator(this, function (_a) {
-          switch (_a.label) {
+        var _a, _b;
+        return __generator(this, function (_c) {
+          switch (_c.label) {
             case 0:
               console.log("captcha loading");
-              _a.label = 1;
+              if (!(config.type === "reCAPTCHAv3")) return [3 /*break*/, 5];
+              _c.label = 1;
             case 1:
-              _a.trys.push([1, 3, , 4]);
+              _c.trys.push([1, 3, , 4]);
               return [
                 4 /*yield*/,
                 loadScript(
-                  "https://www.google.com/recaptcha/api.js?render=".concat(key)
+                  "https://www.google.com/recaptcha/api.js?render=".concat(
+                    config.type === "reCAPTCHAv3"
+                      ? (_a = config.reCAPTCHAv3) === null || _a === void 0
+                        ? void 0
+                        : _a.siteKey
+                      : (_b = config.reCAPTCHAv2) === null || _b === void 0
+                      ? void 0
+                      : _b.siteKey
+                  )
                 ),
               ];
             case 2:
-              _a.sent();
+              _c.sent();
+              setCaptchaLoaded(true);
               console.log("captcha loaded");
               return [3 /*break*/, 4];
             case 3:
-              e_1 = _a.sent();
+              e_1 = _c.sent();
               console.error(e_1);
               return [3 /*break*/, 4];
             case 4:
+              return [3 /*break*/, 7];
+            case 5:
+              if (!(config.type === "reCAPTCHAv2")) return [3 /*break*/, 7];
+              console.log(config.type, "captcha loading");
+              // @ts-ignore
+              window.onCaptchaLoad = function () {
+                setCaptchaLoaded(true);
+                console.log(config.type, "captcha callback loaded");
+              };
+              return [
+                4 /*yield*/,
+                loadScript(
+                  "https://www.google.com/recaptcha/api.js?onload=onCaptchaLoad&render=explicit",
+                  {
+                    async: true,
+                    defer: true,
+                    once: true,
+                  }
+                ),
+              ];
+            case 6:
+              _c.sent();
+              console.log(config.type, "captcha loaded");
+              _c.label = 7;
+            case 7:
               return [2 /*return*/];
           }
         });
@@ -263,7 +310,27 @@ var EmailPasswordSignInForm = function (key) {
     }, []);
     return jsxRuntime.jsx(
       DefaultComponent,
-      __assign({}, props, { config: __assign({}, props.config) })
+      __assign({}, props, {
+        config: __assign(__assign({}, props.config), {
+          override: {
+            functions: function (originalImplementation) {
+              return __assign(__assign({}, originalImplementation), {
+                signIn: function (input) {
+                  return __awaiter(void 0, void 0, void 0, function () {
+                    return __generator(this, function (_a) {
+                      console.log(config.type, "signIn", input);
+                      return [
+                        2 /*return*/,
+                        originalImplementation.signIn(input),
+                      ];
+                    });
+                  });
+                },
+              });
+            },
+          },
+        }),
+      })
     );
   };
 };
@@ -273,87 +340,86 @@ var EmailPasswordSignInForm = function (key) {
 // - action
 // - when to show captcha
 // - timeout for captcha loading
-var init = function (_a) {
-  var key = _a.key;
+var init = function (config) {
+  var captchaContainer = document.createElement("div");
+  captchaContainer.id = "captcha-container";
   return {
     id: PLUGIN_ID,
     overrideMap: {
       emailpassword: {
-        functions: function (originalImplementation) {
-          return __assign(__assign({}, originalImplementation), {
-            signIn: function (input) {
-              // this is correct because we use a timeout for returning from the signIn function
-              // @ts-ignore
-              return new Promise(function (resolve, reject) {
-                console.log("signIn");
-                var captchaTimedOut = false;
-                if (!("grecaptcha" in window)) {
-                  console.log("captcha not loaded");
-                  console.log("grecaptcha not found");
-                  return originalImplementation.signIn(input);
-                }
-                var captchaTimeoutHandle = setTimeout(function () {
-                  console.log("captcha timeout");
-                  reject(new Error("Could not load CAPTCHA"));
-                  captchaTimedOut = true;
-                }, 10 * 1000);
-                // @ts-expect-error plm
-                window.grecaptcha.ready(function () {
-                  var _this = this;
-                  clearTimeout(captchaTimeoutHandle);
-                  if (captchaTimedOut) {
-                    console.log("captcha recovered from timeout");
-                    return;
-                  }
-                  console.log("captcha ready");
-                  // @ts-expect-error plm
-                  window.grecaptcha
-                    .execute(key, {
-                      action: "submit",
-                    })
-                    .then(function (token) {
-                      return originalImplementation.signIn(
-                        __assign(__assign({}, input), {
-                          options: {
-                            preAPIHook: function (input) {
-                              return __awaiter(
-                                _this,
-                                void 0,
-                                void 0,
-                                function () {
-                                  var payload;
-                                  return __generator(this, function (_a) {
-                                    try {
-                                      payload = JSON.parse(
-                                        input.requestInit.body
-                                      );
-                                      payload.captcha = token;
-                                      input.requestInit.body = JSON.stringify(
-                                        payload
-                                      );
-                                      return [2 /*return*/, input];
-                                    } catch (error) {
-                                      console.log("error", error);
-                                      return [2 /*return*/, input];
-                                    }
-                                    return [2 /*return*/];
-                                  });
-                                }
-                              );
-                            },
-                          },
-                        })
-                      );
-                    })
-                    .then(resolve)
-                    .catch(reject);
-                });
-              });
-            },
-          });
-        },
+        // functions(originalImplementation) {
+        //   return {
+        //     ...originalImplementation,
+        //     signIn: (input) => {
+        //       // this is correct because we use a timeout for returning from the signIn function
+        //       // @ts-ignore
+        //       return new Promise((resolve, reject) => {
+        //         if (config.type === "reCAPTCHAv3") {
+        //           let captchaTimedOut = false;
+        //           if (!("grecaptcha" in window)) {
+        //             console.log("captcha not loaded");
+        //             console.log("grecaptcha not found");
+        //             return originalImplementation.signIn(input);
+        //           }
+        //           const captchaTimeoutHandle = setTimeout(() => {
+        //             console.log("captcha timeout");
+        //             reject(new Error("Could not load CAPTCHA"));
+        //             captchaTimedOut = true;
+        //           }, 10 * 1000);
+        //           // @ts-expect-error plm
+        //           window.grecaptcha.ready(function () {
+        //             clearTimeout(captchaTimeoutHandle);
+        //             if (captchaTimedOut) {
+        //               console.log("captcha recovered from timeout");
+        //               return;
+        //             }
+        //             console.log("captcha ready");
+        //             // @ts-expect-error plm
+        //             window.grecaptcha
+        //               .execute(config.reCAPTCHAv3?.siteKey, {
+        //                 action: "submit",
+        //               })
+        //               .then((token: string) => {
+        //                 return originalImplementation.signIn({
+        //                   ...input,
+        //                   options: {
+        //                     preAPIHook: async (input) => {
+        //                       try {
+        //                         const payload = JSON.parse(
+        //                           input.requestInit.body as string
+        //                         );
+        //                         payload.captcha = token;
+        //                         input.requestInit.body = JSON.stringify(
+        //                           payload
+        //                         );
+        //                         return input;
+        //                       } catch (error) {
+        //                         console.log("error", error);
+        //                         return input;
+        //                       }
+        //                     },
+        //                   },
+        //                 });
+        //               })
+        //               .then(resolve)
+        //               .catch(reject);
+        //           });
+        //         } else if (config.type === "reCAPTCHAv2") {
+        //           // @ts-expect-error plm
+        //           window.grecaptcha.render(captchaContainer.id, {
+        //             sitekey: config.reCAPTCHAv3?.siteKey,
+        //           });
+        //         } else {
+        //           return originalImplementation.signIn(input);
+        //         }
+        //       });
+        //     },
+        //   };
+        // },
         components: {
-          EmailPasswordSignInForm_Override: EmailPasswordSignInForm(key),
+          EmailPasswordSignInForm_Override: EmailPasswordSignInForm(
+            __assign({}, config)
+          ),
         },
       },
     },
