@@ -238,6 +238,7 @@ var EmailPasswordSignInForm = function (config) {
       captchaLoaded = _b[0],
       setCaptchaLoaded = _b[1];
     console.log("overrides/EmailPasswordSignInForm");
+    var captchaContainerRef = react.useRef(null);
     console.log(captchaLoaded);
     var loadCaptcha = react.useCallback(function () {
       return __awaiter(void 0, void 0, void 0, function () {
@@ -285,19 +286,24 @@ var EmailPasswordSignInForm = function (config) {
                 setCaptchaLoaded(true);
                 console.log(config.type, "captcha callback loaded");
                 // @ts-ignore
-                window.grecaptcha.render("captcha-container", {
-                  sitekey:
-                    (_a = config.reCAPTCHAv2) === null || _a === void 0
-                      ? void 0
-                      : _a.siteKey,
-                  callback: function () {
-                    var params = [];
-                    for (var _i = 0; _i < arguments.length; _i++) {
-                      params[_i] = arguments[_i];
-                    }
-                    console.log("captcha render callback", params);
-                  },
-                });
+                window.grecaptcha.render(
+                  captchaContainerRef === null || captchaContainerRef === void 0
+                    ? void 0
+                    : captchaContainerRef.current,
+                  {
+                    sitekey:
+                      (_a = config.reCAPTCHAv2) === null || _a === void 0
+                        ? void 0
+                        : _a.siteKey,
+                    callback: function () {
+                      var params = [];
+                      for (var _i = 0; _i < arguments.length; _i++) {
+                        params[_i] = arguments[_i];
+                      }
+                      console.log("captcha render callback", params);
+                    },
+                  }
+                );
               };
               return [
                 4 /*yield*/,
@@ -326,7 +332,10 @@ var EmailPasswordSignInForm = function (config) {
     return jsxRuntime.jsx(
       DefaultComponent,
       __assign({}, props, {
-        footer: jsxRuntime.jsx("div", { id: "captcha-container" }),
+        footer: jsxRuntime.jsx("div", {
+          id: "captcha-container",
+          ref: captchaContainerRef,
+        }),
         config: __assign(__assign({}, props.config), {
           override: {
             functions: function (originalImplementation) {

@@ -1,6 +1,6 @@
 import { ComponentOverrideMap } from "supertokens-auth-react/lib/build/recipe/emailpassword/types";
 import { loadScript } from "../../utils";
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { SuperTokensPluginCaptchaConfig } from "../../types";
 
 export const EmailPasswordSignInForm = (
@@ -11,6 +11,8 @@ export const EmailPasswordSignInForm = (
 }) => {
   const [captchaLoaded, setCaptchaLoaded] = useState(false);
   console.log("overrides/EmailPasswordSignInForm");
+
+  const captchaContainerRef = useRef<HTMLDivElement>(null);
 
   console.log(captchaLoaded);
 
@@ -37,7 +39,7 @@ export const EmailPasswordSignInForm = (
         setCaptchaLoaded(true);
         console.log(config.type, "captcha callback loaded");
         // @ts-ignore
-        window.grecaptcha.render("captcha-container", {
+        window.grecaptcha.render(captchaContainerRef?.current, {
           sitekey: config.reCAPTCHAv2?.siteKey,
           callback: (...params: any[]) => {
             console.log("captcha render callback", params);
@@ -63,7 +65,7 @@ export const EmailPasswordSignInForm = (
   return (
     <DefaultComponent
       {...props}
-      footer={<div id="captcha-container"></div>}
+      footer={<div id="captcha-container" ref={captchaContainerRef}></div>}
       config={{
         ...props.config,
         override: {
