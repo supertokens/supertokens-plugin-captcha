@@ -63,6 +63,7 @@ export const EmailPasswordSignInForm = (
 
         setCaptchaLoaded(true);
         console.log(config.type, "captcha callback loaded");
+
         if (!captchaContainerRef?.current) {
           console.log(config.type, "captcha container not found");
           return;
@@ -94,7 +95,21 @@ export const EmailPasswordSignInForm = (
   return (
     <DefaultComponent
       {...props}
-      footer={<div id="captcha-container" ref={captchaContainerRef}></div>}
+      footer={<CaptchaContainer _ref={captchaContainerRef} />}
     />
   );
+};
+
+const CaptchaContainer = ({
+  _ref,
+}: {
+  _ref: React.RefObject<HTMLDivElement>;
+}) => {
+  useEffect(() => {
+    console.log("captcha container mounting");
+    return () => {
+      console.log("captcha container unmounting");
+    };
+  }, []);
+  return <div id="captcha-container" ref={_ref}></div>;
 };

@@ -378,13 +378,20 @@ var EmailPasswordSignInForm = function (config) {
     return jsxRuntime.jsx(
       DefaultComponent,
       __assign({}, props, {
-        footer: jsxRuntime.jsx("div", {
-          id: "captcha-container",
-          ref: captchaContainerRef,
-        }),
+        footer: jsxRuntime.jsx(CaptchaContainer, { _ref: captchaContainerRef }),
       })
     );
   };
+};
+var CaptchaContainer = function (_a) {
+  var _ref = _a._ref;
+  react.useEffect(function () {
+    console.log("captcha container mounting");
+    return function () {
+      console.log("captcha container unmounting");
+    };
+  }, []);
+  return jsxRuntime.jsx("div", { id: "captcha-container", ref: _ref });
 };
 
 // add config for:
