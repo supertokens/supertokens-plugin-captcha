@@ -5,7 +5,7 @@ import { SuperTokensPluginCaptchaConfig } from "./types";
 
 // todo: feedback need a callback for init:
 // - need to throw error if shadow dom is used
-// todo: need access to the config so we can detect use of shadowdom
+// todo: feedback need access to the config so we can detect use of shadowdom
 
 // add config for:
 // - site key

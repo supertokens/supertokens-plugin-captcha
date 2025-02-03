@@ -10,9 +10,6 @@ export const loadScript = (
     defer?: boolean;
   } = {}
 ): Promise<void> => {
-  console.log("loadScript", url);
-  console.log("loadedScripts", loadedScripts);
-
   return new Promise((resolve, reject) => {
     if (loadedScripts[url]) return resolve();
 
@@ -23,12 +20,10 @@ export const loadScript = (
     script.src = url;
 
     script.onload = () => {
-      console.log("script loaded", url);
       loadedScripts[url] = true;
       resolve();
     };
     script.onerror = (e) => {
-      console.log("script error", url);
       delete loadedScripts[url];
       reject(e);
     };

@@ -6,4 +6,7 @@ export type SuperTokensPluginCaptchaConfig = {
   reCAPTCHAv2?: {
     secretKey: string;
   };
+  turnstile?: {
+    secretKey: string;
+  };
 };

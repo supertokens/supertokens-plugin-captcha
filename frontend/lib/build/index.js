@@ -207,8 +207,6 @@ var loadScript = function (url, _a) {
     async = _c === void 0 ? false : _c,
     _d = _b.defer,
     defer = _d === void 0 ? false : _d;
-  console.log("loadScript", url);
-  console.log("loadedScripts", loadedScripts);
   return new Promise(function (resolve, reject) {
     if (loadedScripts[url]) return resolve();
     var script = document.createElement("script");
@@ -217,12 +215,10 @@ var loadScript = function (url, _a) {
     script.defer = defer;
     script.src = url;
     script.onload = function () {
-      console.log("script loaded", url);
       loadedScripts[url] = true;
       resolve();
     };
     script.onerror = function (e) {
-      console.log("script error", url);
       delete loadedScripts[url];
       reject(e);
     };
@@ -230,155 +226,230 @@ var loadScript = function (url, _a) {
   });
 };
 
-var EmailPasswordSignInForm = function (config) {
-  console.log("EmailPasswordSignInForm init", config);
-  return function (_a) {
-    var DefaultComponent = _a.DefaultComponent,
-      props = __rest(_a, ["DefaultComponent"]);
-    props.config;
-    var _b = react.useState(false),
-      captchaLoaded = _b[0],
-      setCaptchaLoaded = _b[1];
-    var _c = react.useState(null),
-      captchaToken = _c[0],
-      setCaptchaToken = _c[1];
-    console.log("overrides/EmailPasswordSignInForm");
-    var captchaContainerRef = react.useRef(null);
-    console.log(captchaLoaded);
-    var loadCaptcha = react.useCallback(function () {
+var useCaptcha = function (_a) {
+  var targetRef = _a.targetRef,
+    config = __rest(_a, ["targetRef"]);
+  var _b = react.useState(null),
+    token = _b[0],
+    setToken = _b[1];
+  var _c = react.useState(false),
+    loaded = _c[0],
+    setLoaded = _c[1];
+  var updateToken = react.useCallback(function (token) {
+    setToken(token);
+  }, []);
+  var load_reCAPTCHAv2 = react.useCallback(
+    function () {
       return __awaiter(void 0, void 0, void 0, function () {
-        var e_1;
-        var _a, _b;
-        return __generator(this, function (_c) {
-          switch (_c.label) {
+        var onLoad;
+        return __generator(this, function (_a) {
+          switch (_a.label) {
             case 0:
-              if (captchaLoaded) return [2 /*return*/];
-              console.log("captcha loading");
-              if (!(config.type === "reCAPTCHAv3")) return [3 /*break*/, 5];
-              _c.label = 1;
-            case 1:
-              _c.trys.push([1, 3, , 4]);
-              return [
-                4 /*yield*/,
-                loadScript(
-                  "http://www.google.com/recaptcha/api.js?render=".concat(
-                    config.type === "reCAPTCHAv3"
-                      ? (_a = config.reCAPTCHAv3) === null || _a === void 0
-                        ? void 0
-                        : _a.siteKey
-                      : (_b = config.reCAPTCHAv2) === null || _b === void 0
-                      ? void 0
-                      : _b.siteKey
-                  )
-                ),
-              ];
-            case 2:
-              _c.sent();
-              setCaptchaLoaded(true);
-              console.log("captcha loaded");
-              return [3 /*break*/, 4];
-            case 3:
-              e_1 = _c.sent();
-              console.error(e_1);
-              return [3 /*break*/, 4];
-            case 4:
-              return [3 /*break*/, 9];
-            case 5:
-              if (!(config.type === "reCAPTCHAv2")) return [3 /*break*/, 7];
-              console.log(config.type, "captcha loading");
-              // @ts-ignore
-              window.onCaptchaLoad = function () {
+              onLoad = function () {
                 var _a;
-                if (captchaLoaded) return;
-                setCaptchaLoaded(true);
-                console.log(config.type, "captcha callback loaded");
+                if (loaded) return;
+                setLoaded(true);
+                // todo: add typings
                 // @ts-ignore
-                window.grecaptcha.render(
-                  captchaContainerRef === null || captchaContainerRef === void 0
-                    ? void 0
-                    : captchaContainerRef.current,
-                  {
-                    sitekey:
-                      (_a = config.reCAPTCHAv2) === null || _a === void 0
-                        ? void 0
-                        : _a.siteKey,
-                    callback: function (token) {
-                      setCaptchaToken(token);
-                    },
-                  }
-                );
+                window.grecaptcha.render(targetRef.current, {
+                  sitekey:
+                    (_a = config.reCAPTCHAv2) === null || _a === void 0
+                      ? void 0
+                      : _a.siteKey,
+                  callback: updateToken,
+                });
               };
+              // @ts-ignore
+              window.onLoad_reCAPTCHAv2 = onLoad;
               return [
                 4 /*yield*/,
                 loadScript(
-                  "http://www.google.com/recaptcha/api.js?onload=onCaptchaLoad&render=explicit",
+                  "http://www.google.com/recaptcha/api.js?onload=onLoad_reCAPTCHAv2&render=explicit",
                   {
                     async: true,
                     defer: true,
                   }
                 ),
               ];
-            case 6:
-              _c.sent();
-              console.log(config.type, "captcha loaded");
-              return [3 /*break*/, 9];
-            case 7:
-              if (!(config.type === "turnstile")) return [3 /*break*/, 9];
-              // @ts-ignore
-              window.onCaptchaLoad = function () {
+            case 1:
+              _a.sent();
+              return [2 /*return*/];
+          }
+        });
+      });
+    },
+    [config, targetRef, loaded]
+  );
+  var load_reCAPTCHAv3 = react.useCallback(
+    function () {
+      return __awaiter(void 0, void 0, void 0, function () {
+        var _a;
+        return __generator(this, function (_b) {
+          switch (_b.label) {
+            case 0:
+              return [
+                4 /*yield*/,
+                loadScript(
+                  "https://www.google.com/recaptcha/api.js?render=".concat(
+                    (_a = config.reCAPTCHAv3) === null || _a === void 0
+                      ? void 0
+                      : _a.siteKey
+                  ),
+                  {
+                    async: true,
+                    defer: true,
+                  }
+                ),
+              ];
+            case 1:
+              _b.sent();
+              setLoaded(true);
+              return [2 /*return*/];
+          }
+        });
+      });
+    },
+    [config, targetRef, loaded]
+  );
+  var load_turnstile = react.useCallback(
+    function () {
+      return __awaiter(void 0, void 0, void 0, function () {
+        var onLoad;
+        return __generator(this, function (_a) {
+          switch (_a.label) {
+            case 0:
+              onLoad = function () {
                 var _a;
-                setCaptchaLoaded(true);
-                console.log(config.type, "captcha callback loaded");
-                if (
-                  !(captchaContainerRef === null ||
-                  captchaContainerRef === void 0
-                    ? void 0
-                    : captchaContainerRef.current)
-                ) {
-                  console.log(config.type, "captcha container not found");
-                  return;
-                }
+                if (loaded) return;
+                setLoaded(true);
+                // todo: add typings
                 // @ts-ignore
                 window.turnstile.render(
-                  captchaContainerRef === null || captchaContainerRef === void 0
+                  targetRef === null || targetRef === void 0
                     ? void 0
-                    : captchaContainerRef.current,
+                    : targetRef.current,
                   {
                     sitekey:
                       (_a = config.turnstile) === null || _a === void 0
                         ? void 0
                         : _a.siteKey,
-                    callback: function () {
-                      var params = [];
-                      for (var _i = 0; _i < arguments.length; _i++) {
-                        params[_i] = arguments[_i];
-                      }
-                      console.log("captcha render callback", params);
-                    },
+                    callback: updateToken,
                   }
                 );
               };
+              // @ts-ignore
+              window.onLoad_turnstile = onLoad;
               return [
                 4 /*yield*/,
                 loadScript(
-                  "https://challenges.cloudflare.com/turnstile/v0/api.js?onload=onCaptchaLoad",
+                  "https://challenges.cloudflare.com/turnstile/v0/api.js?onload=onLoad_turnstile",
                   {
                     async: true,
                     defer: true,
                   }
                 ),
               ];
-            case 8:
-              _c.sent();
-              _c.label = 9;
-            case 9:
+            case 1:
+              _a.sent();
               return [2 /*return*/];
           }
         });
       });
-    }, []);
+    },
+    [config, targetRef, loaded]
+  );
+  var load = react.useCallback(
+    function () {
+      return __awaiter(void 0, void 0, void 0, function () {
+        return __generator(this, function (_a) {
+          if (config.type === "turnstile")
+            return [2 /*return*/, load_turnstile()];
+          if (config.type === "reCAPTCHAv2")
+            return [2 /*return*/, load_reCAPTCHAv2()];
+          if (config.type === "reCAPTCHAv3")
+            return [2 /*return*/, load_reCAPTCHAv3()];
+          throw new Error("Unsupported CAPTCHA");
+        });
+      });
+    },
+    [config]
+  );
+  var preAPIHook = react.useCallback(
+    function (input) {
+      return __awaiter(void 0, void 0, void 0, function () {
+        var payload, token_1;
+        return __generator(this, function (_a) {
+          switch (_a.label) {
+            case 0:
+              if (!loaded) {
+                throw new Error("CAPTCHA not loaded");
+              }
+              try {
+                payload = JSON.parse(input.requestInit.body);
+              } catch (e) {
+                console.error(e);
+                throw new Error("Error setting CAPTCHA token");
+              }
+              if (config.type === "turnstile") {
+                payload.captcha = token || undefined;
+              }
+              if (config.type === "reCAPTCHAv2") {
+                payload.captcha = token || undefined;
+              }
+              if (!(config.type === "reCAPTCHAv3")) return [3 /*break*/, 2];
+              return [
+                4 /*yield*/,
+                new Promise(function (resolve, reject) {
+                  // @ts-ignore
+                  window.grecaptcha.ready(function () {
+                    var _a;
+                    // @ts-ignore
+                    window.grecaptcha
+                      .execute(
+                        (_a = config.reCAPTCHAv3) === null || _a === void 0
+                          ? void 0
+                          : _a.siteKey,
+                        { action: "submit" }
+                      )
+                      .then(resolve)
+                      .catch(reject);
+                  });
+                }),
+              ];
+            case 1:
+              token_1 = _a.sent();
+              payload.captcha = token_1;
+              _a.label = 2;
+            case 2:
+              if (!payload.captcha) {
+                throw new Error("Error setting CAPTCHA token");
+              }
+              input.requestInit.body = JSON.stringify(payload);
+              return [2 /*return*/, input];
+          }
+        });
+      });
+    },
+    [token, loaded]
+  );
+  return {
+    load: load,
+    loaded: loaded,
+    token: token,
+    preAPIHook: preAPIHook,
+  };
+};
+
+var EmailPasswordSignInForm = function (config) {
+  return function (_a) {
+    var DefaultComponent = _a.DefaultComponent,
+      props = __rest(_a, ["DefaultComponent"]);
+    var captchaContainerRef = react.useRef(null);
+    var captcha = useCaptcha(
+      __assign({ targetRef: captchaContainerRef }, config)
+    );
     react.useEffect(function () {
-      loadCaptcha();
+      captcha.load();
     }, []);
     return jsxRuntime.jsx(
       DefaultComponent,
@@ -387,57 +458,34 @@ var EmailPasswordSignInForm = function (config) {
           __assign({}, props.recipeImplementation),
           {
             signIn: function (input) {
-              console.log("signIn", input);
               return props.recipeImplementation.signIn(
                 __assign(__assign({}, input), {
                   options: {
-                    preAPIHook: function (input) {
-                      return __awaiter(void 0, void 0, void 0, function () {
-                        var payload;
-                        return __generator(this, function (_a) {
-                          try {
-                            payload = JSON.parse(input.requestInit.body);
-                            payload.captcha = captchaToken;
-                            input.requestInit.body = JSON.stringify(payload);
-                            return [2 /*return*/, input];
-                          } catch (error) {
-                            console.log("error", error);
-                            return [2 /*return*/, input];
-                          }
-                          return [2 /*return*/];
-                        });
-                      });
-                    },
+                    preAPIHook: captcha.preAPIHook,
                   },
                 })
               );
             },
           }
         ),
-        footer: jsxRuntime.jsx(CaptchaContainer, { _ref: captchaContainerRef }),
+        footer: jsxRuntime.jsxs(jsxRuntime.Fragment, {
+          children: [
+            captcha.loaded && jsxRuntime.jsx("br", {}),
+            jsxRuntime.jsx("div", {
+              id: "captcha-container",
+              ref: captchaContainerRef,
+              style: { display: "inline-block", margin: "0 auto" },
+            }),
+          ],
+        }),
       })
     );
   };
 };
-var CaptchaContainer = function (_a) {
-  var _ref = _a._ref;
-  react.useEffect(function () {
-    console.log("captcha container mounting");
-    return function () {
-      console.log("captcha container unmounting");
-    };
-  }, []);
-  return jsxRuntime.jsxs(jsxRuntime.Fragment, {
-    children: [
-      jsxRuntime.jsx("br", {}),
-      jsxRuntime.jsx("div", { id: "captcha-container", ref: _ref }),
-    ],
-  });
-};
 
 // todo: feedback need a callback for init:
 // - need to throw error if shadow dom is used
-// todo: need access to the config so we can detect use of shadowdom
+// todo: feedback need access to the config so we can detect use of shadowdom
 // add config for:
 // - site key
 // - action

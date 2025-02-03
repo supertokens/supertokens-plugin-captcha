@@ -43,6 +43,10 @@ export const init = (
                   result = await axios.post(
                     `https://www.google.com/recaptcha/api/siteverify?secret=${config.reCAPTCHAv2?.secretKey}&response=${captcha}`
                   );
+                } else if (config.type === "turnstile") {
+                  result = await axios.post(
+                    `https://challenges.cloudflare.com/turnstile/v0/siteverify?secret=${config.turnstile?.secretKey}&response=${captcha}`
+                  );
                 } else {
                   return originalImplementation.signInPOST!(input);
                 }

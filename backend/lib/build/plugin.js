@@ -22,7 +22,7 @@ const init = (config) => {
           } else {
             return Object.assign(Object.assign({}, originalImplementation), {
               signInPOST: async (input) => {
-                var _a, _b;
+                var _a, _b, _c;
                 console.log(input);
                 const body = await input.options.req.getJSONBody();
                 console.log("body", body);
@@ -48,6 +48,14 @@ const init = (config) => {
                       (_b = config.reCAPTCHAv2) === null || _b === void 0
                         ? void 0
                         : _b.secretKey
+                    }&response=${captcha}`
+                  );
+                } else if (config.type === "turnstile") {
+                  result = await axios_1.default.post(
+                    `https://challenges.cloudflare.com/turnstile/v0/siteverify?secret=${
+                      (_c = config.turnstile) === null || _c === void 0
+                        ? void 0
+                        : _c.secretKey
                     }&response=${captcha}`
                   );
                 } else {
