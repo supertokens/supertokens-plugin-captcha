@@ -3,6 +3,10 @@ import { PLUGIN_ID } from "./config";
 import { EmailPasswordSignInForm } from "./components";
 import { SuperTokensPluginCaptchaConfig } from "./types";
 
+// todo: feedback need a callback for init:
+// - need to throw error if shadow dom is used
+// todo: need access to the config so we can detect use of shadowdom
+
 // add config for:
 // - site key
 // - action

@@ -235,6 +235,7 @@ var EmailPasswordSignInForm = function (config) {
   return function (_a) {
     var DefaultComponent = _a.DefaultComponent,
       props = __rest(_a, ["DefaultComponent"]);
+    props.config;
     var _b = react.useState(false),
       captchaLoaded = _b[0],
       setCaptchaLoaded = _b[1];
@@ -339,19 +340,24 @@ var EmailPasswordSignInForm = function (config) {
                   return;
                 }
                 // @ts-ignore
-                window.turnstile.render("#captcha-container", {
-                  sitekey:
-                    (_a = config.turnstile) === null || _a === void 0
-                      ? void 0
-                      : _a.siteKey,
-                  callback: function () {
-                    var params = [];
-                    for (var _i = 0; _i < arguments.length; _i++) {
-                      params[_i] = arguments[_i];
-                    }
-                    console.log("captcha render callback", params);
-                  },
-                });
+                window.turnstile.render(
+                  captchaContainerRef === null || captchaContainerRef === void 0
+                    ? void 0
+                    : captchaContainerRef.current,
+                  {
+                    sitekey:
+                      (_a = config.turnstile) === null || _a === void 0
+                        ? void 0
+                        : _a.siteKey,
+                    callback: function () {
+                      var params = [];
+                      for (var _i = 0; _i < arguments.length; _i++) {
+                        params[_i] = arguments[_i];
+                      }
+                      console.log("captcha render callback", params);
+                    },
+                  }
+                );
               };
               return [
                 4 /*yield*/,
@@ -394,6 +400,9 @@ var CaptchaContainer = function (_a) {
   return jsxRuntime.jsx("div", { id: "captcha-container", ref: _ref });
 };
 
+// todo: feedback need a callback for init:
+// - need to throw error if shadow dom is used
+// todo: need access to the config so we can detect use of shadowdom
 // add config for:
 // - site key
 // - action

@@ -9,6 +9,7 @@ export const EmailPasswordSignInForm = (
   console.log("EmailPasswordSignInForm init", config);
 
   return ({ DefaultComponent, ...props }) => {
+    props.config;
     const [captchaLoaded, setCaptchaLoaded] = useState(false);
     console.log("overrides/EmailPasswordSignInForm");
 
@@ -70,7 +71,7 @@ export const EmailPasswordSignInForm = (
           }
 
           // @ts-ignore
-          window.turnstile.render("#captcha-container", {
+          window.turnstile.render(captchaContainerRef?.current, {
             sitekey: config.turnstile?.siteKey,
             callback: (...params: any[]) => {
               console.log("captcha render callback", params);
