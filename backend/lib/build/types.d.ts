@@ -1,5 +1,5 @@
 export type SuperTokensPluginCaptchaConfig = {
-  type: "reCAPTCHAv3" | "reCAPTCHAv2";
+  type: "reCAPTCHAv3" | "reCAPTCHAv2" | "turnstile";
   reCAPTCHAv3?: {
     secretKey: string;
   };
