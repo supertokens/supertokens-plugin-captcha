@@ -217,10 +217,12 @@ var loadScript = function (url, _a) {
     script.defer = defer;
     script.src = url;
     script.onload = function () {
+      console.log("script loaded", url);
       loadedScripts[url] = true;
       resolve();
     };
     script.onerror = function (e) {
+      console.log("script error", url);
       delete loadedScripts[url];
       reject(e);
     };

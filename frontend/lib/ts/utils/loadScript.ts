@@ -1,4 +1,5 @@
 const loadedScripts: Record<string, boolean> = {};
+
 export const loadScript = (
   url: string,
   {
@@ -22,10 +23,12 @@ export const loadScript = (
     script.src = url;
 
     script.onload = () => {
+      console.log("script loaded", url);
       loadedScripts[url] = true;
       resolve();
     };
     script.onerror = (e) => {
+      console.log("script error", url);
       delete loadedScripts[url];
       reject(e);
     };
