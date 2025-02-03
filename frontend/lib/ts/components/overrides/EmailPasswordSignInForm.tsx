@@ -11,6 +11,7 @@ export const EmailPasswordSignInForm = (
   return ({ DefaultComponent, ...props }) => {
     props.config;
     const [captchaLoaded, setCaptchaLoaded] = useState(false);
+    const [captchaToken, setCaptchaToken] = useState<string | null>(null);
     console.log("overrides/EmailPasswordSignInForm");
 
     const captchaContainerRef = useRef<HTMLDivElement>(null);
@@ -46,8 +47,8 @@ export const EmailPasswordSignInForm = (
           // @ts-ignore
           window.grecaptcha.render(captchaContainerRef?.current, {
             sitekey: config.reCAPTCHAv2?.siteKey,
-            callback: (...params: any[]) => {
-              console.log("captcha render callback", params);
+            callback: (token: string) => {
+              setCaptchaToken(token);
             },
           });
         };
@@ -100,7 +101,24 @@ export const EmailPasswordSignInForm = (
           ...props.recipeImplementation,
           signIn: (input) => {
             console.log("signIn", input);
-            return props.recipeImplementation.signIn(input);
+            return props.recipeImplementation.signIn({
+              ...input,
+              options: {
+                preAPIHook: async (input) => {
+                  try {
+                    const payload = JSON.parse(
+                      input.requestInit.body as string
+                    );
+                    payload.captcha = captchaToken;
+                    input.requestInit.body = JSON.stringify(payload);
+                    return input;
+                  } catch (error) {
+                    console.log("error", error);
+                    return input;
+                  }
+                },
+              },
+            });
           },
         }}
         footer={<CaptchaContainer _ref={captchaContainerRef} />}

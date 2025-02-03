@@ -239,6 +239,9 @@ var EmailPasswordSignInForm = function (config) {
     var _b = react.useState(false),
       captchaLoaded = _b[0],
       setCaptchaLoaded = _b[1];
+    var _c = react.useState(null),
+      captchaToken = _c[0],
+      setCaptchaToken = _c[1];
     console.log("overrides/EmailPasswordSignInForm");
     var captchaContainerRef = react.useRef(null);
     console.log(captchaLoaded);
@@ -299,12 +302,8 @@ var EmailPasswordSignInForm = function (config) {
                       (_a = config.reCAPTCHAv2) === null || _a === void 0
                         ? void 0
                         : _a.siteKey,
-                    callback: function () {
-                      var params = [];
-                      for (var _i = 0; _i < arguments.length; _i++) {
-                        params[_i] = arguments[_i];
-                      }
-                      console.log("captcha render callback", params);
+                    callback: function (token) {
+                      setCaptchaToken(token);
                     },
                   }
                 );
@@ -389,7 +388,29 @@ var EmailPasswordSignInForm = function (config) {
           {
             signIn: function (input) {
               console.log("signIn", input);
-              return props.recipeImplementation.signIn(input);
+              return props.recipeImplementation.signIn(
+                __assign(__assign({}, input), {
+                  options: {
+                    preAPIHook: function (input) {
+                      return __awaiter(void 0, void 0, void 0, function () {
+                        var payload;
+                        return __generator(this, function (_a) {
+                          try {
+                            payload = JSON.parse(input.requestInit.body);
+                            payload.captcha = captchaToken;
+                            input.requestInit.body = JSON.stringify(payload);
+                            return [2 /*return*/, input];
+                          } catch (error) {
+                            console.log("error", error);
+                            return [2 /*return*/, input];
+                          }
+                          return [2 /*return*/];
+                        });
+                      });
+                    },
+                  },
+                })
+              );
             },
           }
         ),
