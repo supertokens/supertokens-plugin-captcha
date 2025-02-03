@@ -38,8 +38,7 @@ const init = (config) => {
                     (_a = config.reCAPTCHAv3) === null || _a === void 0
                       ? void 0
                       : _a.secretKey
-                  }&response=${captcha}`,
-                  {}
+                  }&response=${captcha}`
                 );
                 console.log(result.data);
                 if (result.data.success) {
