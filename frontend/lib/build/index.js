@@ -248,6 +248,7 @@ var EmailPasswordSignInForm = function (config) {
         return __generator(this, function (_c) {
           switch (_c.label) {
             case 0:
+              if (captchaLoaded) return [2 /*return*/];
               console.log("captcha loading");
               if (!(config.type === "reCAPTCHAv3")) return [3 /*break*/, 5];
               _c.label = 1;
@@ -326,7 +327,6 @@ var EmailPasswordSignInForm = function (config) {
               // @ts-ignore
               window.onCaptchaLoad = function () {
                 var _a;
-                if (captchaLoaded) return;
                 setCaptchaLoaded(true);
                 console.log(config.type, "captcha callback loaded");
                 if (

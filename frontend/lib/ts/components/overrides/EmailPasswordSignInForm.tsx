@@ -17,6 +17,8 @@ export const EmailPasswordSignInForm = (
     console.log(captchaLoaded);
 
     const loadCaptcha = useCallback(async () => {
+      if (captchaLoaded) return;
+
       console.log("captcha loading");
       if (config.type === "reCAPTCHAv3") {
         try {
@@ -59,8 +61,6 @@ export const EmailPasswordSignInForm = (
       } else if (config.type === "turnstile") {
         // @ts-ignore
         window.onCaptchaLoad = () => {
-          if (captchaLoaded) return;
-
           setCaptchaLoaded(true);
           console.log(config.type, "captcha callback loaded");
 
