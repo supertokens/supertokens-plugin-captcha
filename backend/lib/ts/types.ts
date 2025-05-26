@@ -10,3 +10,26 @@ export type SuperTokensPluginCaptchaConfig = {
     secretKey: string;
   };
 };
+
+export type ReCaptchaV3Response = {
+  success: boolean;
+  "error-codes": string[];
+  hostname: string;
+  action: string;
+  score: number;
+  challenge_ts: string;
+};
+
+export type ReCaptchaV2Response = {
+  success: boolean;
+  action: string;
+  "error-codes": string[];
+  challenge_ts: string;
+};
+
+export type TurnstileResponse = {
+  success: boolean;
+  "error-codes": string[];
+  hostname: string;
+  challenge_ts: string;
+};

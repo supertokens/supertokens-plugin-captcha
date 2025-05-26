@@ -1,0 +1,6 @@
+import SuperTokensError from "supertokens-node/lib/build/error";
+type CaptchaPluginErrorType = "CAPTCHA_VERIFICATION_ERROR" | "PLUGIN_CONFIG_ERROR" | "PLUGIN_INITIALIZATION_ERROR";
+export declare class CaptchaPluginError extends SuperTokensError {
+    constructor(type: CaptchaPluginErrorType, message: string);
+}
+export {};

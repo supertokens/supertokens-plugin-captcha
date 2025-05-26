@@ -1,20 +1,14 @@
 import { ComponentOverrideMap } from "supertokens-auth-react/lib/build/recipe/emailpassword/types";
 import { useEffect, useRef } from "react";
-import { SuperTokensPluginCaptchaConfig } from "../../types";
-import { useCaptcha } from "../useCaptcha";
+import { Captcha } from "../../captcha";
+import { CAPTCHA_ELEMENT_ID } from "../../constants";
 
-export const EmailPasswordSignInForm = (
-  config: SuperTokensPluginCaptchaConfig
-): ComponentOverrideMap["EmailPasswordSignInForm_Override"] => {
+export const EmailPasswordSignInForm = (): ComponentOverrideMap["EmailPasswordSignInForm_Override"] => {
   return ({ DefaultComponent, ...props }) => {
-    const captchaContainerRef = useRef<HTMLDivElement>(null);
-    const captcha = useCaptcha({
-      targetRef: captchaContainerRef,
-      ...config,
-    });
+    const captchaRef = useRef(new Captcha());
 
     useEffect(() => {
-      captcha.load();
+      captchaRef.current.load();
     }, []);
 
     return (
@@ -26,18 +20,16 @@ export const EmailPasswordSignInForm = (
             props.recipeImplementation.signIn({
               ...input,
               options: {
-                preAPIHook: captcha.preAPIHook,
+                preAPIHook: captchaRef.current.preAPIHook,
               },
             }),
         }}
         footer={
           <>
-            {captcha.loaded && <br />}
             <div
-              id="captcha-container"
-              ref={captchaContainerRef}
+              id={CAPTCHA_ELEMENT_ID}
               style={{ display: "inline-block", margin: "0 auto" }}
-            ></div>
+            />
           </>
         }
       />

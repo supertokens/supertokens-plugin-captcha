@@ -1,1 +1,5 @@
-export declare const PLUGIN_ID = "supertokens-plugin-captcha";
+import { SuperTokensPluginCaptchaConfig } from "./types";
+export declare function setPluginConfig(
+  config: SuperTokensPluginCaptchaConfig
+): void;
+export declare function getPluginConfig(): SuperTokensPluginCaptchaConfig;

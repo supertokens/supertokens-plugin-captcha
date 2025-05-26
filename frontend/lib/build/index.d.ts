@@ -1,6 +1,6 @@
 import { init } from "./plugin";
 export { init };
-export { PLUGIN_ID } from "./config";
+export { PLUGIN_ID } from "./constants";
 declare const _default: {
   init: (
     config: import("./types").SuperTokensPluginCaptchaConfig
