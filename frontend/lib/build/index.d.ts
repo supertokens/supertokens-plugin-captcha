@@ -1,5 +1,6 @@
 import { init } from "./plugin";
 export { init };
+export { useCaptcha } from "./hooks";
 export { PLUGIN_ID } from "./constants";
 declare const _default: {
     init: (config: import("./types").SuperTokensPluginCaptchaConfig) => import("supertokens-auth-react/lib/build/types").SuperTokensPlugin;

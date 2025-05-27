@@ -119,18 +119,12 @@ function getPluginConfig() {
 var Captcha = /** @class */ (function () {
     function Captcha() {
         var _this = this;
-        this.isLoaded = false;
-        this.token = null;
-        this.domElement = null;
-        this.preAPIHook = function (input) { return __awaiter(_this, void 0, void 0, function () {
-            var config, payload, _a;
-            return __generator(this, function (_b) {
-                switch (_b.label) {
+        this.getPreAPIHook = function (recipe, form) { return function (input) { return __awaiter(_this, void 0, void 0, function () {
+            var config, payload, shouldRender, _a, _b;
+            return __generator(this, function (_c) {
+                switch (_c.label) {
                     case 0:
                         config = getPluginConfig();
-                        if (!this.isLoaded) {
-                            throw new Error("CAPTCHA not loaded");
-                        }
                         try {
                             payload = JSON.parse(input.requestInit.body);
                         }
@@ -138,38 +132,97 @@ var Captcha = /** @class */ (function () {
                             console.error(e);
                             throw new Error("Error setting CAPTCHA token");
                         }
-                        if (!(config.type === "turnstile")) return [3 /*break*/, 1];
-                        payload.catpcha = this.getTurnstileToken();
-                        return [3 /*break*/, 5];
-                    case 1:
-                        if (!(config.type === "reCAPTCHAv2")) return [3 /*break*/, 2];
-                        payload.catpcha = this.getReCAPTCHAv2Token();
-                        return [3 /*break*/, 5];
-                    case 2:
-                        if (!(config.type === "reCAPTCHAv3")) return [3 /*break*/, 4];
+                        shouldRender = false;
+                        if (config.shouldRender) {
+                            shouldRender = config.shouldRender({
+                                recipe: recipe,
+                                form: form,
+                                action: "onSubmit",
+                                input: input,
+                            });
+                        }
+                        if (!shouldRender) return [3 /*break*/, 3];
+                        if (!this.provider.render) {
+                            throw new Error("CAPTCHA provider does not support conditional rendering");
+                        }
+                        if (!(!config.shouldRender ||
+                            (config.shouldRender && config.shouldRender(input)))) return [3 /*break*/, 2];
                         _a = payload;
-                        return [4 /*yield*/, this.getReCAPTCHAv3Token()];
+                        return [4 /*yield*/, this.provider.render()];
+                    case 1:
+                        _a.catpcha = _c.sent();
+                        _c.label = 2;
+                    case 2: return [3 /*break*/, 5];
                     case 3:
-                        _a.catpcha = _b.sent();
-                        return [3 /*break*/, 5];
-                    case 4: throw new Error("Unsupported CAPTCHA type");
+                        _b = payload;
+                        return [4 /*yield*/, this.provider.getToken()];
+                    case 4:
+                        _b.catpcha = _c.sent();
+                        _c.label = 5;
                     case 5:
                         if (!payload.captcha) {
-                            throw new Error("Error setting CAPTCHA token");
+                            throw new Error("Unable to set the CAPTCHA token");
                         }
                         payload.captchaType = config.type;
                         input.requestInit.body = JSON.stringify(payload);
                         return [2 /*return*/, input];
                 }
             });
-        }); };
+        }); }; };
+        var config = getPluginConfig();
+        if (config.type === "turnstile") {
+            this.provider = new TurnstileProvider();
+        }
+        else if (config.type === "reCAPTCHAv2") {
+            this.provider = new ReCAPTCHAv2Provider();
+        }
+        else if (config.type === "reCAPTCHAv3") {
+            this.provider = new ReCAPTCHAv3Provider();
+        }
+        else {
+            throw new Error("Unsupported CAPTCHA type");
+        }
+    }
+    Captcha.prototype.load = function (recipe, form) {
+        var config = getPluginConfig();
+        var shoudRender = true;
+        if (config.shouldRender) {
+            shoudRender = config.shouldRender({
+                recipe: recipe,
+                form: form,
+                action: "onLoad",
+            });
+        }
+        this.provider.load(shoudRender);
+    };
+    return Captcha;
+}());
+var ReCAPTCHAv2Provider = /** @class */ (function () {
+    function ReCAPTCHAv2Provider() {
+        var _this = this;
+        this.token = null;
+        this.isLoaded = false;
         this.setToken = function (token) {
             _this.token = token;
         };
-        this.loadReCAPTCHAv2 = function () { return __awaiter(_this, void 0, void 0, function () {
+    }
+    Object.defineProperty(ReCAPTCHAv2Provider.prototype, "captchaContainer", {
+        get: function () {
+            var element = document.getElementById("captcha-container");
+            if (!element) {
+                throw new Error("Captcha container not found");
+            }
+            return element;
+        },
+        enumerable: false,
+        configurable: true
+    });
+    ReCAPTCHAv2Provider.prototype.load = function () {
+        return __awaiter(this, arguments, void 0, function (render) {
             var config, siteKey, onLoad;
             var _this = this;
             var _a;
+            if (render === void 0) { render = true; }
             return __generator(this, function (_b) {
                 switch (_b.label) {
                     case 0:
@@ -178,39 +231,75 @@ var Captcha = /** @class */ (function () {
                         if (!siteKey) {
                             throw new Error("reCAPTCHAv2 site key is required");
                         }
+                        if (this.isLoaded)
+                            return [2 /*return*/];
                         onLoad = function () {
-                            if (_this.isLoaded)
+                            if (!render) {
                                 return;
-                            if (!_this.domElement) {
-                                throw new Error("Captcha container not found");
                             }
-                            window.grecaptcha.render(_this.domElement, {
-                                sitekey: siteKey,
-                                callback: _this.setToken,
-                            });
-                            _this.isLoaded = true;
+                            _this.render();
                         };
                         window.onLoadReCAPTCHAv2 = onLoad;
                         return [4 /*yield*/, loadScript("https://www.google.com/recaptcha/api.js?onload=onLoadReCAPTCHAv2&render=explicit")];
                     case 1:
                         _b.sent();
+                        this.isLoaded = true;
                         return [2 /*return*/];
                 }
             });
-        }); };
-        this.loadReCAPTCHAv3 = function () { return __awaiter(_this, void 0, void 0, function () {
+        });
+    };
+    ReCAPTCHAv2Provider.prototype.render = function () {
+        var _this = this;
+        var _a;
+        var config = getPluginConfig();
+        var siteKey = (_a = config === null || config === void 0 ? void 0 : config.reCAPTCHAv2) === null || _a === void 0 ? void 0 : _a.siteKey;
+        if (!siteKey) {
+            throw new Error("reCAPTCHAv2 site key is required");
+        }
+        if (!window.grecaptcha) {
+            throw new Error("ReCAPTCHAv2 is not loaded");
+        }
+        return new Promise(function (resolve) {
+            window.grecaptcha.render(_this.captchaContainer, {
+                sitekey: siteKey,
+                callback: function (token) {
+                    _this.token = token;
+                    resolve(token);
+                },
+            });
+        });
+    };
+    ReCAPTCHAv2Provider.prototype.getToken = function () {
+        return __awaiter(this, void 0, void 0, function () {
+            return __generator(this, function (_a) {
+                if (!this.token) {
+                    throw new Error("No CAPTCHA token available");
+                }
+                return [2 /*return*/, Promise.resolve(this.token)];
+            });
+        });
+    };
+    return ReCAPTCHAv2Provider;
+}());
+var ReCAPTCHAv3Provider = /** @class */ (function () {
+    function ReCAPTCHAv3Provider() {
+        this.isLoaded = false;
+    }
+    ReCAPTCHAv3Provider.prototype.load = function () {
+        return __awaiter(this, void 0, void 0, function () {
             var config, siteKey;
             var _a;
             return __generator(this, function (_b) {
                 switch (_b.label) {
                     case 0:
-                        if (this.isLoaded)
-                            return [2 /*return*/];
                         config = getPluginConfig();
                         siteKey = (_a = config === null || config === void 0 ? void 0 : config.reCAPTCHAv3) === null || _a === void 0 ? void 0 : _a.siteKey;
                         if (!siteKey) {
                             throw new Error("reCAPTCHAv3 site key is required");
                         }
+                        if (this.isLoaded)
+                            return [2 /*return*/];
                         return [4 /*yield*/, loadScript("https://www.google.com/recaptcha/api.js?render=".concat(siteKey))];
                     case 1:
                         _b.sent();
@@ -218,60 +307,9 @@ var Captcha = /** @class */ (function () {
                         return [2 /*return*/];
                 }
             });
-        }); };
-        this.loadTurnstile = function () { return __awaiter(_this, void 0, void 0, function () {
-            var config, siteKey, onLoad;
-            var _this = this;
-            var _a;
-            return __generator(this, function (_b) {
-                switch (_b.label) {
-                    case 0:
-                        config = getPluginConfig();
-                        siteKey = (_a = config === null || config === void 0 ? void 0 : config.turnstile) === null || _a === void 0 ? void 0 : _a.siteKey;
-                        onLoad = function () {
-                            if (!siteKey) {
-                                throw new Error("turnstile site key is required");
-                            }
-                            if (_this.isLoaded)
-                                return;
-                            if (!_this.domElement) {
-                                throw new Error("Captcha container not found");
-                            }
-                            window.turnstile.render(_this.domElement, {
-                                sitekey: siteKey,
-                                callback: _this.setToken,
-                            });
-                        };
-                        window.onLoadTurnstile = onLoad;
-                        return [4 /*yield*/, loadScript("https://challenges.cloudflare.com/turnstile/v0/api.js?onload=onLoadTurnstile")];
-                    case 1:
-                        _b.sent();
-                        return [2 /*return*/];
-                }
-            });
-        }); };
-    }
-    Captcha.prototype.load = function () {
-        this.domElement = document.getElementById("captcha-container");
-        if (!this.domElement) {
-            throw new Error("Captcha container not found");
-        }
-        var config = getPluginConfig();
-        if (config.type === "turnstile")
-            return this.loadTurnstile();
-        if (config.type === "reCAPTCHAv2")
-            return this.loadReCAPTCHAv2();
-        if (config.type === "reCAPTCHAv3")
-            return this.loadReCAPTCHAv3();
-        throw new Error("Unsupported CAPTCHA type");
+        });
     };
-    Captcha.prototype.getReCAPTCHAv2Token = function () {
-        return this.token;
-    };
-    Captcha.prototype.getTurnstileToken = function () {
-        return this.token;
-    };
-    Captcha.prototype.getReCAPTCHAv3Token = function () {
+    ReCAPTCHAv3Provider.prototype.getToken = function () {
         return __awaiter(this, void 0, void 0, function () {
             var config, siteKey, actionName, token;
             var _a, _b;
@@ -283,6 +321,9 @@ var Captcha = /** @class */ (function () {
                         actionName = ((_b = config.reCAPTCHAv3) === null || _b === void 0 ? void 0 : _b.actionName) || "submit";
                         if (!siteKey) {
                             throw new Error("reCAPTCHAv3 site key is required");
+                        }
+                        if (!window.grecaptcha) {
+                            throw new Error("ReCAPTCHAv3 is not loaded");
                         }
                         return [4 /*yield*/, new Promise(function (resolve, reject) {
                                 window.grecaptcha.ready(function () {
@@ -299,7 +340,92 @@ var Captcha = /** @class */ (function () {
             });
         });
     };
-    return Captcha;
+    return ReCAPTCHAv3Provider;
+}());
+var TurnstileProvider = /** @class */ (function () {
+    function TurnstileProvider() {
+        var _this = this;
+        this.token = null;
+        this.isLoaded = false;
+        this.setToken = function (token) {
+            _this.token = token;
+        };
+    }
+    Object.defineProperty(TurnstileProvider.prototype, "captchaContainer", {
+        get: function () {
+            var element = document.getElementById("captcha-container");
+            if (!element) {
+                throw new Error("Captcha container not found");
+            }
+            return element;
+        },
+        enumerable: false,
+        configurable: true
+    });
+    TurnstileProvider.prototype.load = function () {
+        return __awaiter(this, arguments, void 0, function (render) {
+            var config, siteKey, onLoad;
+            var _this = this;
+            var _a;
+            if (render === void 0) { render = true; }
+            return __generator(this, function (_b) {
+                switch (_b.label) {
+                    case 0:
+                        config = getPluginConfig();
+                        siteKey = (_a = config === null || config === void 0 ? void 0 : config.reCAPTCHAv2) === null || _a === void 0 ? void 0 : _a.siteKey;
+                        if (!siteKey) {
+                            throw new Error("reCAPTCHAv2 site key is required");
+                        }
+                        if (this.isLoaded)
+                            return [2 /*return*/];
+                        onLoad = function () {
+                            if (!render) {
+                                return;
+                            }
+                            _this.render();
+                        };
+                        window.onLoadTurnstile = onLoad;
+                        return [4 /*yield*/, loadScript("https://challenges.cloudflare.com/turnstile/v0/api.js?onload=onLoadTurnstile")];
+                    case 1:
+                        _b.sent();
+                        this.isLoaded = true;
+                        return [2 /*return*/];
+                }
+            });
+        });
+    };
+    TurnstileProvider.prototype.render = function () {
+        var _this = this;
+        var _a;
+        var config = getPluginConfig();
+        var siteKey = (_a = config === null || config === void 0 ? void 0 : config.reCAPTCHAv2) === null || _a === void 0 ? void 0 : _a.siteKey;
+        if (!siteKey) {
+            throw new Error("turnstile site key is required");
+        }
+        if (!window.turnstile) {
+            throw new Error("Turnstile is not loaded");
+        }
+        return new Promise(function (resolve) {
+            window.turnstile.render(_this.captchaContainer, {
+                sitekey: siteKey,
+                callback: function (token) {
+                    _this.token = token;
+                    resolve(token);
+                },
+            });
+        });
+    };
+    TurnstileProvider.prototype.getToken = function () {
+        return __awaiter(this, void 0, void 0, function () {
+            return __generator(this, function (_a) {
+                if (!this.token) {
+                    throw new Error("No CAPTCHA token available");
+                }
+                return [2 /*return*/, Promise.resolve(this.token)];
+            });
+        });
+    };
+    return TurnstileProvider;
 }());
 var LoadedScripts = {};
 function loadScript(url) {
@@ -327,16 +453,21 @@ function loadScript(url) {
     });
 }
 
+function useCaptcha(recipe, form) {
+    var captchaRef = react.useRef(new Captcha());
+    react.useEffect(function () {
+        captchaRef.current.load(recipe, form);
+    }, []);
+    return captchaRef;
+}
+
 var EmailPasswordSignInForm = function () {
     return function (_a) {
         var DefaultComponent = _a.DefaultComponent, props = __rest(_a, ["DefaultComponent"]);
-        var captchaRef = react.useRef(new Captcha());
-        react.useEffect(function () {
-            captchaRef.current.load();
-        }, []);
+        var captchaRef = useCaptcha("emailpassword", "signIn");
         return (jsxRuntime.jsx(DefaultComponent, __assign({}, props, { recipeImplementation: __assign(__assign({}, props.recipeImplementation), { signIn: function (input) {
                     return props.recipeImplementation.signIn(__assign(__assign({}, input), { options: {
-                            preAPIHook: captchaRef.current.preAPIHook,
+                            preAPIHook: captchaRef.current.getPreAPIHook("emailpassword", "signIn"),
                         } }));
                 } }), footer: jsxRuntime.jsx(jsxRuntime.Fragment, { children: jsxRuntime.jsx("div", { id: CAPTCHA_ELEMENT_ID, style: { display: "inline-block", margin: "0 auto" } }) }) })));
     };
@@ -364,3 +495,4 @@ var index = { init: init };
 exports.PLUGIN_ID = PLUGIN_ID;
 exports.default = index;
 exports.init = init;
+exports.useCaptcha = useCaptcha;

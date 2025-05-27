@@ -10,6 +10,23 @@ export type SuperTokensPluginCaptchaConfig = {
   turnstile?: {
     siteKey: string;
   };
+  // By default the captcha is rendered on all the forms, during the initial load phase
+  // Use this property to specify when to render the captcha
+  shouldRender?: (
+    payload:
+      | {
+          recipe: "emailpassword";
+          form: "signIn" | "signUp";
+          action: "onLoad";
+        }
+      | {
+          recipe: "emailpassword";
+          form: "signIn" | "signUp";
+          action: "onSubmit";
+          // TODO: Add the actual preAPIHook types
+          input: any;
+        }
+  ) => boolean;
 };
 
 declare global {
@@ -40,4 +57,10 @@ declare global {
     onLoadReCAPTCHAv2: () => void;
     onLoadTurnstile: () => void;
   }
+}
+
+export interface CaptchaProvider {
+  load: (render?: boolean) => Promise<void>;
+  render?: () => Promise<string>;
+  getToken: () => Promise<string>;
 }

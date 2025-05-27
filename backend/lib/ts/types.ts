@@ -9,6 +9,14 @@ export type SuperTokensPluginCaptchaConfig = {
   turnstile?: {
     secretKey: string;
   };
+  // By default the captcha validation is performed on all the form submit actions
+  // Use this property to specify when to perform the validation
+  shouldValidate?: (payload: {
+    recipe: "emailpassword";
+    action: "signInPOST" | "signUpPOST";
+    // TODO: Add the proper API input types here
+    input: any;
+  }) => boolean;
 };
 
 export type ReCaptchaV3Response = {

@@ -6,7 +6,7 @@ exports.setPluginConfig = setPluginConfig;
 const logger_1 = require("supertokens-node/lib/build/logger");
 const errors_1 = require("./errors");
 exports.PLUGIN_ID = "supertokens-plugin-captcha";
-exports.PLUGIN_SDK_VERSION = "21.1.0";
+exports.PLUGIN_SDK_VERSION = "22.1.0-canary-plugins.0";
 let PluginConfig;
 function getPluginConfig() {
     if (!PluginConfig) {

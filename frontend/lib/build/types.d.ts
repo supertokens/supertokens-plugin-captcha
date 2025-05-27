@@ -10,6 +10,16 @@ export type SuperTokensPluginCaptchaConfig = {
     turnstile?: {
         siteKey: string;
     };
+    shouldRender?: (payload: {
+        recipe: "emailpassword";
+        form: "signIn" | "signUp";
+        action: "onLoad";
+    } | {
+        recipe: "emailpassword";
+        form: "signIn" | "signUp";
+        action: "onSubmit";
+        input: any;
+    }) => boolean;
 };
 declare global {
     interface Window {
@@ -32,4 +42,9 @@ declare global {
         onLoadReCAPTCHAv2: () => void;
         onLoadTurnstile: () => void;
     }
+}
+export interface CaptchaProvider {
+    load: (render?: boolean) => Promise<void>;
+    render?: () => Promise<string>;
+    getToken: () => Promise<string>;
 }

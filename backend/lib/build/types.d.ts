@@ -9,6 +9,11 @@ export type SuperTokensPluginCaptchaConfig = {
     turnstile?: {
         secretKey: string;
     };
+    shouldValidate?: (payload: {
+        recipe: "emailpassword";
+        action: "signInPOST" | "signUpPOST";
+        input: any;
+    }) => boolean;
 };
 export type ReCaptchaV3Response = {
     success: boolean;

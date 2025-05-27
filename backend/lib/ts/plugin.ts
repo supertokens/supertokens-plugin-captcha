@@ -9,20 +9,30 @@ export const init = (
   setPluginConfig(config);
   return {
     id: PLUGIN_ID,
-    compatibleSDKVersions: PLUGIN_SDK_VERSION,
+    compatibleSDKVersions: [PLUGIN_SDK_VERSION],
     overrideMap: {
       emailpassword: {
         apis: (originalImplementation) => {
           if (!originalImplementation.signInPOST) {
             return originalImplementation;
           }
-
           return {
             ...originalImplementation,
             signInPOST: async (input) => {
               const body = await input.options.req.getJSONBody();
               const captcha = "captcha" in body ? body.captcha : null;
               const type = "captchaType" in body ? body.captchaType : null;
+
+              if (
+                config.shouldValidate &&
+                !config.shouldValidate({
+                  recipe: "emailpassword",
+                  action: "signInPOST",
+                  input,
+                })
+              ) {
+                return originalImplementation.signInPOST!(input);
+              }
 
               if (!captcha) {
                 return {

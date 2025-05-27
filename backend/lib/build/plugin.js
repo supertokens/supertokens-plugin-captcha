@@ -7,7 +7,7 @@ const init = (config) => {
     (0, config_1.setPluginConfig)(config);
     return {
         id: config_1.PLUGIN_ID,
-        compatibleSDKVersions: config_1.PLUGIN_SDK_VERSION,
+        compatibleSDKVersions: [config_1.PLUGIN_SDK_VERSION],
         overrideMap: {
             emailpassword: {
                 apis: (originalImplementation) => {
@@ -20,6 +20,14 @@ const init = (config) => {
                             const body = await input.options.req.getJSONBody();
                             const captcha = "captcha" in body ? body.captcha : null;
                             const type = "captchaType" in body ? body.captchaType : null;
+                            if (config.shouldValidate &&
+                                !config.shouldValidate({
+                                    recipe: "emailpassword",
+                                    action: "signInPOST",
+                                    input,
+                                })) {
+                                return originalImplementation.signInPOST(input);
+                            }
                             if (!captcha) {
                                 return {
                                     status: "GENERAL_ERROR",

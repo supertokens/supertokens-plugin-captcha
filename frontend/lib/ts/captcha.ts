@@ -1,31 +1,41 @@
 import { getPluginConfig } from "./config";
+import { CaptchaProvider } from "./types";
+import { CAPTCHA_ELEMENT_ID } from "./constants";
 
 export class Captcha {
-  private isLoaded = false;
-  private token: string | null = null;
-  private domElement: HTMLElement | null = null;
+  private provider: CaptchaProvider;
 
-  constructor() {}
-
-  load() {
-    this.domElement = document.getElementById("captcha-container");
-    if (!this.domElement) {
-      throw new Error("Captcha container not found");
-    }
+  constructor() {
     const config = getPluginConfig();
-
-    if (config.type === "turnstile") return this.loadTurnstile();
-    if (config.type === "reCAPTCHAv2") return this.loadReCAPTCHAv2();
-    if (config.type === "reCAPTCHAv3") return this.loadReCAPTCHAv3();
-
-    throw new Error("Unsupported CAPTCHA type");
+    if (config.type === "turnstile") {
+      this.provider = new TurnstileProvider();
+    } else if (config.type === "reCAPTCHAv2") {
+      this.provider = new ReCAPTCHAv2Provider();
+    } else if (config.type === "reCAPTCHAv3") {
+      this.provider = new ReCAPTCHAv3Provider();
+    } else {
+      throw new Error("Unsupported CAPTCHA type");
+    }
   }
 
-  preAPIHook = async (input: any) => {
+  load(recipe: "emailpassword", form: "signIn" | "signUp") {
     const config = getPluginConfig();
-    if (!this.isLoaded) {
-      throw new Error("CAPTCHA not loaded");
+    let shoudRender = true;
+    if (config.shouldRender) {
+      shoudRender = config.shouldRender({
+        recipe,
+        form,
+        action: "onLoad",
+      });
     }
+    this.provider.load(shoudRender);
+  }
+
+  getPreAPIHook = (
+    recipe: "emailpassword",
+    form: "signIn" | "signUp"
+  ) => async (input: any) => {
+    const config = getPluginConfig();
 
     let payload: Record<string, any> & { captcha: string | null };
     try {
@@ -35,104 +45,136 @@ export class Captcha {
       throw new Error("Error setting CAPTCHA token");
     }
 
-    if (config.type === "turnstile") {
-      payload.catpcha = this.getTurnstileToken();
-    } else if (config.type === "reCAPTCHAv2") {
-      payload.catpcha = this.getReCAPTCHAv2Token();
-    } else if (config.type === "reCAPTCHAv3") {
-      payload.catpcha = await this.getReCAPTCHAv3Token();
+    let shouldRender = false;
+    if (config.shouldRender) {
+      shouldRender = config.shouldRender({
+        recipe,
+        form,
+        action: "onSubmit",
+        input,
+      });
+    }
+
+    if (shouldRender) {
+      if (!this.provider.render) {
+        throw new Error(
+          "CAPTCHA provider does not support conditional rendering"
+        );
+      }
+
+      if (
+        !config.shouldRender ||
+        (config.shouldRender && config.shouldRender(input))
+      ) {
+        payload.catpcha = await this.provider.render();
+      }
     } else {
-      throw new Error("Unsupported CAPTCHA type");
+      payload.catpcha = await this.provider.getToken();
     }
 
     if (!payload.captcha) {
-      throw new Error("Error setting CAPTCHA token");
+      throw new Error("Unable to set the CAPTCHA token");
     }
 
     payload.captchaType = config.type;
     input.requestInit.body = JSON.stringify(payload);
     return input;
   };
+}
+
+export class ReCAPTCHAv2Provider implements CaptchaProvider {
+  private token: string | null = null;
+  private isLoaded = false;
 
   setToken = (token: string) => {
     this.token = token;
   };
 
-  private loadReCAPTCHAv2 = async () => {
+  private get captchaContainer() {
+    const element = document.getElementById(CAPTCHA_ELEMENT_ID);
+    if (!element) {
+      throw new Error("Captcha container not found");
+    }
+    return element;
+  }
+
+  async load(render = true) {
     const config = getPluginConfig();
     const siteKey = config?.reCAPTCHAv2?.siteKey;
     if (!siteKey) {
       throw new Error("reCAPTCHAv2 site key is required");
     }
+    if (this.isLoaded) return;
+
     const onLoad = () => {
-      if (this.isLoaded) return;
-      if (!this.domElement) {
-        throw new Error("Captcha container not found");
+      if (!render) {
+        return;
       }
-      window.grecaptcha.render(this.domElement, {
-        sitekey: siteKey,
-        callback: this.setToken,
-      });
-      this.isLoaded = true;
+      this.render();
     };
 
     window.onLoadReCAPTCHAv2 = onLoad;
     await loadScript(
       `https://www.google.com/recaptcha/api.js?onload=onLoadReCAPTCHAv2&render=explicit`
     );
-  };
+    this.isLoaded = true;
+  }
 
-  private loadReCAPTCHAv3 = async () => {
-    if (this.isLoaded) return;
+  render() {
+    const config = getPluginConfig();
+    const siteKey = config?.reCAPTCHAv2?.siteKey;
+    if (!siteKey) {
+      throw new Error("reCAPTCHAv2 site key is required");
+    }
+    if (!window.grecaptcha) {
+      throw new Error("ReCAPTCHAv2 is not loaded");
+    }
+
+    return new Promise<string>((resolve) => {
+      window.grecaptcha.render(this.captchaContainer, {
+        sitekey: siteKey,
+        callback: (token) => {
+          this.token = token;
+          resolve(token);
+        },
+      });
+    });
+  }
+
+  async getToken(): Promise<string> {
+    if (!this.token) {
+      throw new Error("No CAPTCHA token available");
+    }
+    return Promise.resolve(this.token);
+  }
+}
+
+export class ReCAPTCHAv3Provider implements CaptchaProvider {
+  private isLoaded = false;
+
+  async load() {
     const config = getPluginConfig();
     const siteKey = config?.reCAPTCHAv3?.siteKey;
     if (!siteKey) {
       throw new Error("reCAPTCHAv3 site key is required");
     }
+    if (this.isLoaded) return;
 
     await loadScript(
       `https://www.google.com/recaptcha/api.js?render=${siteKey}`
     );
     this.isLoaded = true;
-  };
-
-  private loadTurnstile = async () => {
-    const config = getPluginConfig();
-    const siteKey = config?.turnstile?.siteKey;
-    const onLoad = () => {
-      if (!siteKey) {
-        throw new Error("turnstile site key is required");
-      }
-      if (this.isLoaded) return;
-      if (!this.domElement) {
-        throw new Error("Captcha container not found");
-      }
-      window.turnstile.render(this.domElement, {
-        sitekey: siteKey,
-        callback: this.setToken,
-      });
-    };
-
-    window.onLoadTurnstile = onLoad;
-    await loadScript(
-      `https://challenges.cloudflare.com/turnstile/v0/api.js?onload=onLoadTurnstile`
-    );
-  };
-
-  private getReCAPTCHAv2Token() {
-    return this.token;
   }
 
-  private getTurnstileToken() {
-    return this.token;
-  }
-
-  private async getReCAPTCHAv3Token() {
+  async getToken(): Promise<string> {
     const config = getPluginConfig();
     const siteKey = config.reCAPTCHAv3?.siteKey;
     const actionName = config.reCAPTCHAv3?.actionName || "submit";
     if (!siteKey) {
       throw new Error("reCAPTCHAv3 site key is required");
+    }
+    if (!window.grecaptcha) {
+      throw new Error("ReCAPTCHAv3 is not loaded");
     }
     const token: string = await new Promise((resolve, reject) => {
       window.grecaptcha.ready(function () {
@@ -143,6 +185,73 @@ export class Captcha {
       });
     });
     return token;
+  }
+}
+
+export class TurnstileProvider implements CaptchaProvider {
+  private token: string | null = null;
+  private isLoaded = false;
+
+  setToken = (token: string) => {
+    this.token = token;
+  };
+
+  private get captchaContainer() {
+    const element = document.getElementById(CAPTCHA_ELEMENT_ID);
+    if (!element) {
+      throw new Error("Captcha container not found");
+    }
+    return element;
+  }
+
+  async load(render = true) {
+    const config = getPluginConfig();
+    const siteKey = config?.reCAPTCHAv2?.siteKey;
+    if (!siteKey) {
+      throw new Error("reCAPTCHAv2 site key is required");
+    }
+    if (this.isLoaded) return;
+
+    const onLoad = () => {
+      if (!render) {
+        return;
+      }
+      this.render();
+    };
+
+    window.onLoadTurnstile = onLoad;
+    await loadScript(
+      `https://challenges.cloudflare.com/turnstile/v0/api.js?onload=onLoadTurnstile`
+    );
+    this.isLoaded = true;
+  }
+
+  render() {
+    const config = getPluginConfig();
+    const siteKey = config?.reCAPTCHAv2?.siteKey;
+    if (!siteKey) {
+      throw new Error("turnstile site key is required");
+    }
+    if (!window.turnstile) {
+      throw new Error("Turnstile is not loaded");
+    }
+
+    return new Promise<string>((resolve) => {
+      window.turnstile.render(this.captchaContainer, {
+        sitekey: siteKey,
+        callback: (token) => {
+          this.token = token;
+          resolve(token);
+        },
+      });
+    });
+  }
+
+  async getToken(): Promise<string> {
+    if (!this.token) {
+      throw new Error("No CAPTCHA token available");
+    }
+    return Promise.resolve(this.token);
   }
 }
 
