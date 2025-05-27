@@ -1,0 +1,117 @@
+import { getPluginConfig } from "./config";
+import { SuperTokensPluginCaptchaConfig } from "./types";
+import { CaptchaPluginError } from "./errors";
+
+export const SupportedCaptchaTypes = [
+  "reCAPTCHAv3",
+  "reCAPTCHAv2",
+  "turnstile",
+];
+
+export const CaptchaValidators: Record<
+  SuperTokensPluginCaptchaConfig["type"],
+  (captcha: string) => Promise<void>
+> = {
+  reCAPTCHAv3: verifyReCaptchaV3,
+  reCAPTCHAv2: verifyReCaptchaV2,
+  turnstile: verifyTurnstile,
+};
+
+export async function verifyReCaptchaV3(captcha: string): Promise<void> {
+  const config = getPluginConfig();
+  const reCAPTCHAv3Key = config.reCAPTCHAv3?.secretKey;
+  if (!reCAPTCHAv3Key) {
+    throw new CaptchaPluginError(
+      "PLUGIN_CONFIG_ERROR",
+      "reCAPTCHAv3 secretKey is required"
+    );
+  }
+
+  const response = await fetch(
+    `https://www.google.com/recaptcha/api/siteverify?secret=${reCAPTCHAv3Key}&response=${captcha}`,
+    { method: "POST" }
+  );
+  if (!response.ok) {
+    throw new CaptchaPluginError(
+      "CAPTCHA_VERIFICATION_ERROR",
+      "CAPTCHA verification failed"
+    );
+  }
+
+  const data = await response.json();
+  if (!data.success) {
+    throw new CaptchaPluginError(
+      "CAPTCHA_VERIFICATION_ERROR",
+      "CAPTCHA verification failed"
+    );
+  }
+}
+
+async function verifyReCaptchaV2(captcha: string): Promise<void> {
+  const config = getPluginConfig();
+  const reCAPTCHAv2Key = config.reCAPTCHAv2?.secretKey;
+  if (!reCAPTCHAv2Key) {
+    throw new CaptchaPluginError(
+      "PLUGIN_CONFIG_ERROR",
+      "reCAPTCHAv2 secretKey is required"
+    );
+  }
+
+  const response = await fetch(
+    `https://www.google.com/recaptcha/api/siteverify?secret=${reCAPTCHAv2Key}&response=${captcha}`,
+    { method: "POST" }
+  );
+  if (!response.ok) {
+    throw new CaptchaPluginError(
+      "CAPTCHA_VERIFICATION_ERROR",
+      "CAPTCHA verification failed"
+    );
+  }
+
+  const data = await response.json();
+  if (!data.success) {
+    throw new CaptchaPluginError(
+      "CAPTCHA_VERIFICATION_ERROR",
+      "CAPTCHA verification failed"
+    );
+  }
+}
+
+async function verifyTurnstile(captcha: string): Promise<void> {
+  const config = getPluginConfig();
+  const turnstileKey = config.turnstile?.secretKey;
+  if (!turnstileKey) {
+    throw new CaptchaPluginError(
+      "PLUGIN_CONFIG_ERROR",
+      "turnstile secretKey is required"
+    );
+  }
+
+  const response = await fetch(
+    `https://challenges.cloudflare.com/turnstile/v0/siteverify`,
+    {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        secret: config.turnstile?.secretKey,
+        response: captcha,
+      }),
+    }
+  );
+  if (!response.ok) {
+    throw new CaptchaPluginError(
+      "CAPTCHA_VERIFICATION_ERROR",
+      "CAPTCHA verification failed"
+    );
+  }
+
+  const data = await response.json();
+  if (!data.success) {
+    throw new CaptchaPluginError(
+      "CAPTCHA_VERIFICATION_ERROR",
+      "CAPTCHA verification failed"
+    );
+  }
+}
