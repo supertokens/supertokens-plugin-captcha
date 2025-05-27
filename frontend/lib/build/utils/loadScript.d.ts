@@ -1,10 +1,4 @@
-export declare const loadScript: (
-  url: string,
-  {
-    async,
-    defer,
-  }?: {
+export declare const loadScript: (url: string, { async, defer, }?: {
     async?: boolean;
     defer?: boolean;
-  }
-) => Promise<void>;
+}) => Promise<void>;

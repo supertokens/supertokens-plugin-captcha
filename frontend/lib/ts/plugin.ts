@@ -1,7 +1,7 @@
-import { SuperTokensPlugin } from "supertokens-auth-react/lib/build/types";
-import { PLUGIN_ID } from "./config";
-import { EmailPasswordSignInForm } from "./components";
-import { SuperTokensPluginCaptchaConfig } from "./types";
+import { SuperTokensPlugin } from 'supertokens-auth-react/lib/build/types';
+import { PLUGIN_ID } from './config';
+import { EmailPasswordSignInForm } from './components';
+import { SuperTokensPluginCaptchaConfig } from './types';
 
 // todo: feedback need a callback for init:
 // - need to throw error if shadow dom is used
@@ -11,9 +11,7 @@ import { SuperTokensPluginCaptchaConfig } from "./types";
 // - action
 // - when to show captcha
 
-export const init = (
-  config: SuperTokensPluginCaptchaConfig
-): SuperTokensPlugin => {
+export const init = (config: SuperTokensPluginCaptchaConfig): SuperTokensPlugin => {
   return {
     id: PLUGIN_ID,
     overrideMap: {
