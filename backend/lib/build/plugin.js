@@ -8,7 +8,6 @@ const init = (config) => {
     return {
         id: config_1.PLUGIN_ID,
         compatibleSDKVersions: config_1.PLUGIN_SDK_VERSION,
-        routeHandlers: [],
         overrideMap: {
             emailpassword: {
                 apis: (originalImplementation) => {

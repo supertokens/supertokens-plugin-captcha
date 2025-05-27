@@ -15,7 +15,6 @@ export const init = (
   return {
     id: PLUGIN_ID,
     compatibleSDKVersions: PLUGIN_SDK_VERSION,
-    routeHandlers: [],
     overrideMap: {
       emailpassword: {
         apis: (originalImplementation) => {
