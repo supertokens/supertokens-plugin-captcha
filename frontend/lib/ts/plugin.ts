@@ -1,22 +1,55 @@
 import { SuperTokensPlugin } from "supertokens-auth-react/lib/build/types";
 import { PLUGIN_ID } from "./constants";
-import { EmailPasswordSignInForm } from "./components";
+import { ComponentOverrides } from "./components";
+import { captcha } from "./captcha";
 import { SuperTokensPluginCaptchaConfig } from "./types";
-import { setPluginConfig } from "./config";
+import { setPluginConfig, validatePublicConfig } from "./config";
 
-// Open questions:
-// - Does shadow dom affect this
-// - Do we want people to be able to customize when the captcha is shown
 export const init = (
   config: SuperTokensPluginCaptchaConfig
 ): SuperTokensPlugin => {
   setPluginConfig(config);
   return {
     id: PLUGIN_ID,
+    init: (config) => {
+      validatePublicConfig(config);
+    },
     overrideMap: {
       emailpassword: {
+        config: (config) => {
+          return {
+            ...config,
+            preAPIHook: captcha.preAPIHook,
+          };
+        },
         components: {
-          EmailPasswordSignInForm_Override: EmailPasswordSignInForm(),
+          EmailPasswordSignInForm_Override: ComponentOverrides.EmailPasswordSignInForm(),
+          EmailPasswordSignUpForm_Override: ComponentOverrides.EmailPasswordSignUpForm(),
+        },
+      },
+      passwordless: {
+        config: (config) => {
+          return {
+            ...config,
+            preAPIHook: captcha.preAPIHook,
+          };
+        },
+        components: {
+          PasswordlessEmailForm_Override: ComponentOverrides.PasswordlessEmailForm(),
+          PasswordlessPhoneForm_Override: ComponentOverrides.PasswordlessPhoneForm(),
+          PasswordlessEmailOrPhoneForm_Override: ComponentOverrides.PasswordlessEmailOrPhoneForm(),
+          PasswordlessUserInputCodeForm_Override: ComponentOverrides.PasswordlessUserInputCodeForm(),
+        },
+      },
+      totp: {
+        config: (config) => {
+          return {
+            ...config,
+            preAPIHook: captcha.preAPIHook,
+          };
+        },
+        components: {
+          TOTPCodeForm_Override: ComponentOverrides.TOTPCodeForm(),
         },
       },
     },
