@@ -34,10 +34,6 @@ export function setPluginConfig(config: SuperTokensPluginCaptchaConfig) {
     throw new Error("turnstile site key is required");
   }
 
-  if (config.type === "reCAPTCHAv3" && config.shouldRender) {
-    throw new Error("reCAPTCHAv3 does not support custom rendering");
-  }
-
   if (config.type === "reCAPTCHAv3" && config.InputContainer) {
     throw new Error("reCAPTCHAv3 does not support rendering");
   }

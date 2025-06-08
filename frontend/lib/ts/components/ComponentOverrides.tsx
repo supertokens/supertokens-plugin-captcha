@@ -1,11 +1,11 @@
 import { ComponentOverrideMap as EmailPasswordComponentOverrideMap } from "supertokens-auth-react/lib/build/recipe/emailpassword/types";
 import { ComponentOverrideMap as PasswordlessComponentOverrideMap } from "supertokens-auth-react/lib/build/recipe/passwordless/types";
 import { ComponentOverrideMap as TotpComponentOverrideMap } from "supertokens-auth-react/lib/build/recipe/totp/types";
-import { useCaptchaContainer } from "../hooks";
+import { useCaptchaInputContainer } from "../hooks";
 
 export const EmailPasswordSignInForm = (): EmailPasswordComponentOverrideMap["EmailPasswordSignInForm_Override"] => {
   return ({ DefaultComponent, ...props }) => {
-    const CaptchaContainer = useCaptchaContainer();
+    const CaptchaContainer = useCaptchaInputContainer();
     return (
       <DefaultComponent
         {...props}
@@ -17,7 +17,7 @@ export const EmailPasswordSignInForm = (): EmailPasswordComponentOverrideMap["Em
 
 export const EmailPasswordSignUpForm = (): EmailPasswordComponentOverrideMap["EmailPasswordSignUpForm_Override"] => {
   return ({ DefaultComponent, ...props }) => {
-    const CaptchaContainer = useCaptchaContainer();
+    const CaptchaContainer = useCaptchaInputContainer();
     return (
       <DefaultComponent
         {...props}
@@ -63,7 +63,7 @@ export const EmailPasswordSignUpForm = (): EmailPasswordComponentOverrideMap["Em
 
 export const PasswordlessEmailForm = (): PasswordlessComponentOverrideMap["PasswordlessEmailForm_Override"] => {
   return ({ DefaultComponent, ...props }) => {
-    const CaptchaContainer = useCaptchaContainer();
+    const CaptchaContainer = useCaptchaInputContainer();
     return (
       <DefaultComponent
         {...props}
@@ -75,7 +75,7 @@ export const PasswordlessEmailForm = (): PasswordlessComponentOverrideMap["Passw
 
 export const PasswordlessPhoneForm = (): PasswordlessComponentOverrideMap["PasswordlessPhoneForm_Override"] => {
   return ({ DefaultComponent, ...props }) => {
-    const CaptchaContainer = useCaptchaContainer();
+    const CaptchaContainer = useCaptchaInputContainer();
     return (
       <DefaultComponent
         {...props}
@@ -87,7 +87,7 @@ export const PasswordlessPhoneForm = (): PasswordlessComponentOverrideMap["Passw
 
 export const PasswordlessEmailOrPhoneForm = (): PasswordlessComponentOverrideMap["PasswordlessEmailOrPhoneForm_Override"] => {
   return ({ DefaultComponent, ...props }) => {
-    const CaptchaContainer = useCaptchaContainer();
+    const CaptchaContainer = useCaptchaInputContainer();
     return (
       <DefaultComponent
         {...props}
@@ -129,7 +129,7 @@ export const PasswordlessEmailOrPhoneForm = (): PasswordlessComponentOverrideMap
 
 export const PasswordlessUserInputCodeForm = (): PasswordlessComponentOverrideMap["PasswordlessUserInputCodeForm_Override"] => {
   return ({ DefaultComponent, ...props }) => {
-    const CaptchaContainer = useCaptchaContainer();
+    const CaptchaContainer = useCaptchaInputContainer();
     return (
       <DefaultComponent
         {...props}
@@ -141,7 +141,7 @@ export const PasswordlessUserInputCodeForm = (): PasswordlessComponentOverrideMa
 
 export const TOTPCodeForm = (): TotpComponentOverrideMap["TOTPCodeForm_Override"] => {
   return ({ DefaultComponent, ...props }) => {
-    const CaptchaContainer = useCaptchaContainer();
+    const CaptchaContainer = useCaptchaInputContainer();
     return (
       <DefaultComponent
         {...props}

@@ -1,2 +1,2 @@
 export declare const PLUGIN_ID = "supertokens-plugin-captcha";
-export declare const CAPTCHA_ELEMENT_ID = "captcha-container";
+export declare const CAPTCHA_INPUT_CONTAINER_ID = "captcha-container";

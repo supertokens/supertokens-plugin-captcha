@@ -2,40 +2,6 @@ import { APIInterface as EmailPasswordAPIInterface } from "supertokens-node/reci
 import { APIInterface as PasswordlessAPIInterface } from "supertokens-node/recipe/passwordless/types";
 import { APIInterface as TotpAPIInterface } from "supertokens-node/recipe/totp/types";
 
-export type CaptchaAPIFunctionName =
-  | Extract<
-      keyof EmailPasswordAPIInterface,
-      | "signInPOST"
-      | "signUpPOST"
-      | "passwordResetPOST"
-      | "generatePasswordResetTokenPOST"
-    >
-  | Extract<
-      keyof PasswordlessAPIInterface,
-      "consumeCodePOST" | "createCodePOST" | "resendCodePOST"
-    >
-  | Extract<keyof TotpAPIInterface, "verifyTOTPPOST">;
-
-export function isCaptchaApiFunction(
-  apiFunctionName: string
-): apiFunctionName is CaptchaAPIFunctionName {
-  const captchaApiFunctionNames: CaptchaAPIFunctionName[] = [
-    "signInPOST",
-    "signUpPOST",
-    "passwordResetPOST",
-    "generatePasswordResetTokenPOST",
-    "consumeCodePOST",
-    "createCodePOST",
-    "consumeCodePOST",
-    "resendCodePOST",
-    "verifyTOTPPOST",
-  ];
-
-  return captchaApiFunctionNames.includes(
-    apiFunctionName as CaptchaAPIFunctionName
-  );
-}
-
 interface ShouldValidate {
   (
     api: "signInPOST",

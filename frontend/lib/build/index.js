@@ -89,8 +89,10 @@ typeof SuppressedError === "function" ? SuppressedError : function (error, suppr
 };
 
 var PLUGIN_ID = "supertokens-plugin-captcha";
-var CAPTCHA_ELEMENT_ID = "captcha-container";
+var CAPTCHA_INPUT_CONTAINER_ID = "captcha-container";
 
+/// <reference types="@types/cloudflare-turnstile" />
+/// <reference types="@types/grecaptcha" />
 function isEmailPasswordCaptchaPreAndPostAPIHookAction(action) {
     return (action === "EMAIL_PASSWORD_SIGN_UP" ||
         action === "EMAIL_PASSWORD_SIGN_IN" ||
@@ -128,9 +130,6 @@ function setPluginConfig(config) {
     }
     if (config.type === "turnstile" && !config.captcha.sitekey) {
         throw new Error("turnstile site key is required");
-    }
-    if (config.type === "reCAPTCHAv3" && config.shouldRender) {
-        throw new Error("reCAPTCHAv3 does not support custom rendering");
     }
     if (config.type === "reCAPTCHAv3" && config.InputContainer) {
         throw new Error("reCAPTCHAv3 does not support rendering");
@@ -239,7 +238,7 @@ var Captcha = /** @class */ (function () {
             if (!this.config) {
                 throw new Error("Captcha config is not initialised");
             }
-            var containerId = this.config.inputContainerId || CAPTCHA_ELEMENT_ID;
+            var containerId = this.config.inputContainerId || CAPTCHA_INPUT_CONTAINER_ID;
             var element = document.getElementById(containerId);
             if (!element) {
                 throw new Error("Captcha input container element not found");
@@ -731,8 +730,9 @@ function getErrorMessage(error) {
     return String(error);
 }
 
-var CaptchaContainer = react.forwardRef(function (props, ref) {
+var CaptchaInputContainer = react.forwardRef(function (props, ref) {
     props.form; var rest = __rest(props, ["form"]);
+    var containerId = useCaptchaInputContainerId();
     var loadAndRenderCaptcha = react.useCallback(function () { return __awaiter(void 0, void 0, void 0, function () {
         return __generator(this, function (_a) {
             switch (_a.label) {
@@ -749,31 +749,38 @@ var CaptchaContainer = react.forwardRef(function (props, ref) {
     react.useEffect(function () {
         loadAndRenderCaptcha();
     }, [loadAndRenderCaptcha]);
-    return (jsxRuntime.jsx("div", __assign({ ref: ref, id: CAPTCHA_ELEMENT_ID, style: { display: "inline-block", margin: "0 auto", paddingTop: "20px" } }, rest)));
+    return (jsxRuntime.jsx("div", __assign({ ref: ref, id: containerId, style: { display: "inline-block", margin: "0 auto", paddingTop: "20px" } }, rest)));
 });
-CaptchaContainer.displayName = "CaptchaContainer";
+CaptchaInputContainer.displayName = "CaptchaInputContainer";
 
-function useCaptchaContainer() {
+function useCaptchaInputContainer() {
     return react.useMemo(function () {
         var config = getPluginConfig();
         if (config.InputContainer) {
             return config.InputContainer;
         }
-        return CaptchaContainer;
+        return CaptchaInputContainer;
+    }, []);
+}
+
+function useCaptchaInputContainerId() {
+    return react.useMemo(function () {
+        var config = getPluginConfig();
+        return config.inputContainerId || CAPTCHA_INPUT_CONTAINER_ID;
     }, []);
 }
 
 var EmailPasswordSignInForm = function () {
     return function (_a) {
         var DefaultComponent = _a.DefaultComponent, props = __rest(_a, ["DefaultComponent"]);
-        var CaptchaContainer = useCaptchaContainer();
+        var CaptchaContainer = useCaptchaInputContainer();
         return (jsxRuntime.jsx(DefaultComponent, __assign({}, props, { footer: jsxRuntime.jsx(CaptchaContainer, { form: "EmailPasswordSignInForm" }) })));
     };
 };
 var EmailPasswordSignUpForm = function () {
     return function (_a) {
         var DefaultComponent = _a.DefaultComponent, props = __rest(_a, ["DefaultComponent"]);
-        var CaptchaContainer = useCaptchaContainer();
+        var CaptchaContainer = useCaptchaInputContainer();
         return (jsxRuntime.jsx(DefaultComponent, __assign({}, props, { footer: jsxRuntime.jsx(jsxRuntime.Fragment, { children: jsxRuntime.jsx(CaptchaContainer, { form: "EmailPasswordSignUpForm" }) }) })));
     };
 };
@@ -809,21 +816,21 @@ var EmailPasswordSignUpForm = function () {
 var PasswordlessEmailForm = function () {
     return function (_a) {
         var DefaultComponent = _a.DefaultComponent, props = __rest(_a, ["DefaultComponent"]);
-        var CaptchaContainer = useCaptchaContainer();
+        var CaptchaContainer = useCaptchaInputContainer();
         return (jsxRuntime.jsx(DefaultComponent, __assign({}, props, { footer: jsxRuntime.jsx(CaptchaContainer, { form: "PasswordlessEmailForm" }) })));
     };
 };
 var PasswordlessPhoneForm = function () {
     return function (_a) {
         var DefaultComponent = _a.DefaultComponent, props = __rest(_a, ["DefaultComponent"]);
-        var CaptchaContainer = useCaptchaContainer();
+        var CaptchaContainer = useCaptchaInputContainer();
         return (jsxRuntime.jsx(DefaultComponent, __assign({}, props, { footer: jsxRuntime.jsx(CaptchaContainer, { form: "PasswordlessPhoneForm" }) })));
     };
 };
 var PasswordlessEmailOrPhoneForm = function () {
     return function (_a) {
         var DefaultComponent = _a.DefaultComponent, props = __rest(_a, ["DefaultComponent"]);
-        var CaptchaContainer = useCaptchaContainer();
+        var CaptchaContainer = useCaptchaInputContainer();
         return (jsxRuntime.jsx(DefaultComponent, __assign({}, props, { footer: jsxRuntime.jsx(CaptchaContainer, { form: "PasswordlessEmailOrPhoneForm" }) })));
     };
 };
@@ -858,14 +865,14 @@ var PasswordlessEmailOrPhoneForm = function () {
 var PasswordlessUserInputCodeForm = function () {
     return function (_a) {
         var DefaultComponent = _a.DefaultComponent, props = __rest(_a, ["DefaultComponent"]);
-        var CaptchaContainer = useCaptchaContainer();
+        var CaptchaContainer = useCaptchaInputContainer();
         return (jsxRuntime.jsx(DefaultComponent, __assign({}, props, { footer: jsxRuntime.jsx(CaptchaContainer, { form: "PasswordlessUserInputForm" }) })));
     };
 };
 var TOTPCodeForm = function () {
     return function (_a) {
         var DefaultComponent = _a.DefaultComponent, props = __rest(_a, ["DefaultComponent"]);
-        var CaptchaContainer = useCaptchaContainer();
+        var CaptchaContainer = useCaptchaInputContainer();
         return (jsxRuntime.jsx(DefaultComponent, __assign({}, props, { footer: jsxRuntime.jsx(CaptchaContainer, { form: "TOTPCodeForm" }) })));
     };
 };
@@ -916,3 +923,5 @@ exports.PLUGIN_ID = PLUGIN_ID;
 exports.default = index;
 exports.init = init;
 exports.useCaptcha = useCaptcha;
+exports.useCaptchaInputContainer = useCaptchaInputContainer;
+exports.useCaptchaInputContainerId = useCaptchaInputContainerId;

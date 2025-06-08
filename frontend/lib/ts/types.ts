@@ -1,7 +1,5 @@
 /// <reference types="@types/cloudflare-turnstile" />
 /// <reference types="@types/grecaptcha" />
-import { RecipePreAPIHookContext } from "supertokens-auth-react/lib/build/recipe/recipeModule/types";
-import { AllRecipeConfigs } from "supertokens-auth-react/lib/build/types";
 
 import { PreAndPostAPIHookAction as EmailPasswordPreAndPostAPIHookAction } from "supertokens-auth-react/lib/build/recipe/emailpassword/types";
 import { PreAndPostAPIHookAction as PasswordlessPreAndPostAPIHookAction } from "supertokens-auth-react/lib/build/recipe/passwordless/types";
@@ -96,63 +94,7 @@ export function isTotpCaptchaPreAndPostAPIHookAction(
   return action === "VERIFY_CODE";
 }
 
-export type CaptchaRecipeName = Extract<
-  keyof AllRecipeConfigs,
-  "emailpassword" | "passwordless" | "totp"
->;
-
-interface ShouldRender {
-  (
-    recipe: "emailpassword",
-    action: EmailPasswordCaptchaPreAndPostAPIHookActions,
-    renderPhase: "onLoad"
-  ): boolean | Promise<boolean>;
-  (
-    recipe: "emailpassword",
-    action: EmailPasswordCaptchaPreAndPostAPIHookActions,
-    renderPhase: "onSubmit",
-    preAPIHookContext: RecipePreAPIHookContext<
-      EmailPasswordCaptchaPreAndPostAPIHookActions
-    >
-  ): boolean | Promise<boolean>;
-  (
-    recipe: "passwordless",
-    action: PasswordlessCaptchaPreAndPostAPIHookActions,
-    renderPhase: "onLoad"
-  ): boolean | Promise<boolean>;
-  (
-    recipe: "passwordless",
-    action: PasswordlessCaptchaPreAndPostAPIHookActions,
-    renderPhase: "onSubmit",
-    preAPIHookContext: RecipePreAPIHookContext<
-      PasswordlessCaptchaPreAndPostAPIHookActions
-    >
-  ): boolean | Promise<boolean>;
-  (
-    recipe: "totp",
-    action: TotpCaptchaPreAndPostAPIHookActions,
-    renderPhase: "onLoad"
-  ): boolean | Promise<boolean>;
-  (
-    recipe: "totp",
-    action: TotpCaptchaPreAndPostAPIHookActions,
-    renderPhase: "onSubmit",
-    preAPIHookContext: RecipePreAPIHookContext<
-      TotpCaptchaPreAndPostAPIHookActions
-    >
-  ): boolean | Promise<boolean>;
-}
-
 export type SuperTokensPluginCaptchaConfig = CaptchaConfig & {
-  // By default the captcha is rendered on the following forms, during the initial load phase:
-  // - EMAIL_PASSWORD_SIGN_UP
-  // - EMAIL_PASSWORD_SIGN_IN
-  // - EMAIL_PASSWORD_PASSWORD_RESET
-  // - PASSWORDLESS_SIGN_IN
-  // - PASSWORDLESS_SUBMIT_CODE
-  // - TOTP_SUBMIT_CODE
-  // If you want to limit where the captcha is rendered or change the rendering behavior use this function
-  shouldRender?: ShouldRender;
   // React component inside which the captcha input will render.
   // The component should pass a reference that will be used in the captcha provider for rendering.
   InputContainer?: React.ForwardRefExoticComponent<
@@ -160,3 +102,18 @@ export type SuperTokensPluginCaptchaConfig = CaptchaConfig & {
   >;
   inputContainerId?: string;
 };
+
+export type CaptchInputContainerProps = {
+  form:
+    | "EmailPasswordSignInForm"
+    | "EmailPasswordSignUpForm"
+    | "EmailPasswordResetPasswordEmail"
+    | "EmailPasswordSubmitNewPassword"
+    | "PasswordlessEmailForm"
+    | "PasswordlessPhoneForm"
+    | "PasswordlessEmailOrPhoneForm"
+    | "PasswordlessEPComboEmailForm"
+    | "PasswordlessEPComboEmailOrPhoneForm"
+    | "PasswordlessUserInputForm"
+    | "TOTPCodeForm";
+} & React.HTMLAttributes<HTMLDivElement>;

@@ -1,5 +1,3 @@
-import { RecipePreAPIHookContext } from "supertokens-auth-react/lib/build/recipe/recipeModule/types";
-import { AllRecipeConfigs } from "supertokens-auth-react/lib/build/types";
 import { PreAndPostAPIHookAction as EmailPasswordPreAndPostAPIHookAction } from "supertokens-auth-react/lib/build/recipe/emailpassword/types";
 import { PreAndPostAPIHookAction as PasswordlessPreAndPostAPIHookAction } from "supertokens-auth-react/lib/build/recipe/passwordless/types";
 import { PreAndPostAPIHookAction as TotpPreAndPostAPIHookAction } from "supertokens-auth-react/lib/build/recipe/totp/types";
@@ -44,18 +42,11 @@ export type PasswordlessCaptchaPreAndPostAPIHookActions = Extract<PasswordlessPr
 export declare function isPasswordlessCaptchaPreAndPostAPIHookAction(action: string): action is PasswordlessCaptchaPreAndPostAPIHookActions;
 export type TotpCaptchaPreAndPostAPIHookActions = Extract<TotpPreAndPostAPIHookAction, "VERIFY_CODE">;
 export declare function isTotpCaptchaPreAndPostAPIHookAction(action: string): action is TotpCaptchaPreAndPostAPIHookActions;
-export type CaptchaRecipeName = Extract<keyof AllRecipeConfigs, "emailpassword" | "passwordless" | "totp">;
-interface ShouldRender {
-    (recipe: "emailpassword", action: EmailPasswordCaptchaPreAndPostAPIHookActions, renderPhase: "onLoad"): boolean | Promise<boolean>;
-    (recipe: "emailpassword", action: EmailPasswordCaptchaPreAndPostAPIHookActions, renderPhase: "onSubmit", preAPIHookContext: RecipePreAPIHookContext<EmailPasswordCaptchaPreAndPostAPIHookActions>): boolean | Promise<boolean>;
-    (recipe: "passwordless", action: PasswordlessCaptchaPreAndPostAPIHookActions, renderPhase: "onLoad"): boolean | Promise<boolean>;
-    (recipe: "passwordless", action: PasswordlessCaptchaPreAndPostAPIHookActions, renderPhase: "onSubmit", preAPIHookContext: RecipePreAPIHookContext<PasswordlessCaptchaPreAndPostAPIHookActions>): boolean | Promise<boolean>;
-    (recipe: "totp", action: TotpCaptchaPreAndPostAPIHookActions, renderPhase: "onLoad"): boolean | Promise<boolean>;
-    (recipe: "totp", action: TotpCaptchaPreAndPostAPIHookActions, renderPhase: "onSubmit", preAPIHookContext: RecipePreAPIHookContext<TotpCaptchaPreAndPostAPIHookActions>): boolean | Promise<boolean>;
-}
 export type SuperTokensPluginCaptchaConfig = CaptchaConfig & {
-    shouldRender?: ShouldRender;
     InputContainer?: React.ForwardRefExoticComponent<React.HTMLAttributes<HTMLDivElement> & React.RefAttributes<HTMLDivElement>>;
     inputContainerId?: string;
 };
+export type CaptchInputContainerProps = {
+    form: "EmailPasswordSignInForm" | "EmailPasswordSignUpForm" | "EmailPasswordResetPasswordEmail" | "EmailPasswordSubmitNewPassword" | "PasswordlessEmailForm" | "PasswordlessPhoneForm" | "PasswordlessEmailOrPhoneForm" | "PasswordlessEPComboEmailForm" | "PasswordlessEPComboEmailOrPhoneForm" | "PasswordlessUserInputForm" | "TOTPCodeForm";
+} & React.HTMLAttributes<HTMLDivElement>;
 export {};

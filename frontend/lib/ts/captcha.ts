@@ -13,7 +13,7 @@ import { RecipePreAPIHookContext } from "supertokens-auth-react/lib/build/recipe
 import { PreAndPostAPIHookAction as EmailPasswordPreAndPostAPIHookAction } from "supertokens-auth-react/lib/build/recipe/emailpassword/types";
 import { PreAndPostAPIHookAction as PasswordlessPreAndPostAPIHookAction } from "supertokens-auth-react/lib/build/recipe/passwordless/types";
 import { PreAndPostAPIHookAction as TotpPreAndPostAPIHookAction } from "supertokens-auth-react/lib/build/recipe/totp/types";
-import { CAPTCHA_ELEMENT_ID } from "./constants";
+import { CAPTCHA_INPUT_CONTAINER_ID } from "./constants";
 import { logDebugMessage } from "./config";
 
 export class Captcha {
@@ -47,7 +47,8 @@ export class Captcha {
     if (!this.config) {
       throw new Error("Captcha config is not initialised");
     }
-    const containerId = this.config.inputContainerId || CAPTCHA_ELEMENT_ID;
+    const containerId =
+      this.config.inputContainerId || CAPTCHA_INPUT_CONTAINER_ID;
     const element = document.getElementById(containerId);
     if (!element) {
       throw new Error("Captcha input container element not found");

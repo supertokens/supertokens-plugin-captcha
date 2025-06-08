@@ -1,10 +1,6 @@
 import { getPluginConfig } from "./config";
-import { isCaptchaApiFunction, SuperTokensPluginCaptchaConfig } from "./types";
+import { SuperTokensPluginCaptchaConfig } from "./types";
 import { CaptchaPluginError } from "./errors";
-
-import { APIInterface as EmailPasswordAPIInterface } from "supertokens-node/recipe/emailpassword/types";
-// import { APIInterface as PasswordlessAPIInterface } from "supertokens-node/recipe/passwordless/types";
-// import { APIInterface as TotpAPIInterface } from "supertokens-node/recipe/totp/types";
 
 export const SupportedCaptchaTypes = [
   "reCAPTCHAv3",
