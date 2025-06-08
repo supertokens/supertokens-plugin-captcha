@@ -1,6 +1,10 @@
 import { getPluginConfig } from "./config";
-import { SuperTokensPluginCaptchaConfig } from "./types";
+import { isCaptchaApiFunction, SuperTokensPluginCaptchaConfig } from "./types";
 import { CaptchaPluginError } from "./errors";
+
+import { APIInterface as EmailPasswordAPIInterface } from "supertokens-node/recipe/emailpassword/types";
+// import { APIInterface as PasswordlessAPIInterface } from "supertokens-node/recipe/passwordless/types";
+// import { APIInterface as TotpAPIInterface } from "supertokens-node/recipe/totp/types";
 
 export const SupportedCaptchaTypes = [
   "reCAPTCHAv3",
@@ -17,9 +21,48 @@ export const CaptchaValidators: Record<
   turnstile: verifyTurnstile,
 };
 
+export async function validateCaptcha(body: Record<string, unknown>) {
+  const config = getPluginConfig();
+  const captcha = "captcha" in body ? (body.captcha as string) : null;
+  const type = "captchaType" in body ? body.captchaType : null;
+
+  if (!captcha) {
+    throw new CaptchaPluginError(
+      "CAPTCHA_VERIFICATION_ERROR",
+      "The 'captcha' field is required"
+    );
+  }
+
+  if (!type) {
+    throw new CaptchaPluginError(
+      "CAPTCHA_VERIFICATION_ERROR",
+      "The 'captchaType' field is required"
+    );
+  }
+
+  if (type !== config.type) {
+    throw new CaptchaPluginError(
+      "CAPTCHA_VERIFICATION_ERROR",
+      `Invalid captcha type. Expected ${config.type} but got ${type}`
+    );
+  }
+
+  const validator = CaptchaValidators[config.type];
+  if (!validator) {
+    throw new CaptchaPluginError(
+      "CAPTCHA_VERIFICATION_ERROR",
+      `Unsupported captcha type: ${
+        config.type
+      }. Must be one of ${SupportedCaptchaTypes.join(", ")}`
+    );
+  }
+
+  await validator(captcha);
+}
+
 export async function verifyReCaptchaV3(captcha: string): Promise<void> {
   const config = getPluginConfig();
-  const reCAPTCHAv3Key = config.reCAPTCHAv3?.secretKey;
+  const reCAPTCHAv3Key = config.captcha.secretKey;
   if (!reCAPTCHAv3Key) {
     throw new CaptchaPluginError(
       "PLUGIN_CONFIG_ERROR",
@@ -49,7 +92,7 @@ export async function verifyReCaptchaV3(captcha: string): Promise<void> {
 
 async function verifyReCaptchaV2(captcha: string): Promise<void> {
   const config = getPluginConfig();
-  const reCAPTCHAv2Key = config.reCAPTCHAv2?.secretKey;
+  const reCAPTCHAv2Key = config.captcha.secretKey;
   if (!reCAPTCHAv2Key) {
     throw new CaptchaPluginError(
       "PLUGIN_CONFIG_ERROR",
@@ -79,7 +122,7 @@ async function verifyReCaptchaV2(captcha: string): Promise<void> {
 
 async function verifyTurnstile(captcha: string): Promise<void> {
   const config = getPluginConfig();
-  const turnstileKey = config.turnstile?.secretKey;
+  const turnstileKey = config.captcha?.secretKey;
   if (!turnstileKey) {
     throw new CaptchaPluginError(
       "PLUGIN_CONFIG_ERROR",
@@ -95,7 +138,7 @@ async function verifyTurnstile(captcha: string): Promise<void> {
         "Content-Type": "application/json",
       },
       body: JSON.stringify({
-        secret: config.turnstile?.secretKey,
+        secret: turnstileKey,
         response: captcha,
       }),
     }

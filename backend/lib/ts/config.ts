@@ -1,5 +1,4 @@
 import { SuperTokensPluginCaptchaConfig } from "./types";
-import { logDebugMessage } from "supertokens-node/lib/build/logger";
 
 import { CaptchaPluginError } from "./errors";
 
@@ -20,8 +19,6 @@ export function getPluginConfig() {
 }
 
 export function setPluginConfig(config: SuperTokensPluginCaptchaConfig) {
-  logDebugMessage("Validating plugin config");
-
   if (!config.type) {
     throw new CaptchaPluginError(
       "PLUGIN_INITIALIZATION_ERROR",
@@ -31,7 +28,7 @@ export function setPluginConfig(config: SuperTokensPluginCaptchaConfig) {
 
   if (
     config.type === "reCAPTCHAv3" &&
-    config.reCAPTCHAv3?.secretKey === undefined
+    config.captcha?.secretKey === undefined
   ) {
     throw new CaptchaPluginError(
       "PLUGIN_INITIALIZATION_ERROR",
@@ -41,7 +38,7 @@ export function setPluginConfig(config: SuperTokensPluginCaptchaConfig) {
 
   if (
     config.type === "reCAPTCHAv2" &&
-    config.reCAPTCHAv2?.secretKey === undefined
+    config.captcha?.secretKey === undefined
   ) {
     throw new CaptchaPluginError(
       "PLUGIN_INITIALIZATION_ERROR",
@@ -49,10 +46,7 @@ export function setPluginConfig(config: SuperTokensPluginCaptchaConfig) {
     );
   }
 
-  if (
-    config.type === "turnstile" &&
-    config.turnstile?.secretKey === undefined
-  ) {
+  if (config.type === "turnstile" && config.captcha?.secretKey === undefined) {
     throw new CaptchaPluginError(
       "PLUGIN_INITIALIZATION_ERROR",
       "turnstile secretKey is required"

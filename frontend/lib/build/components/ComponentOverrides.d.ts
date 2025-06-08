@@ -1,0 +1,10 @@
+import { ComponentOverrideMap as EmailPasswordComponentOverrideMap } from "supertokens-auth-react/lib/build/recipe/emailpassword/types";
+import { ComponentOverrideMap as PasswordlessComponentOverrideMap } from "supertokens-auth-react/lib/build/recipe/passwordless/types";
+import { ComponentOverrideMap as TotpComponentOverrideMap } from "supertokens-auth-react/lib/build/recipe/totp/types";
+export declare const EmailPasswordSignInForm: () => EmailPasswordComponentOverrideMap["EmailPasswordSignInForm_Override"];
+export declare const EmailPasswordSignUpForm: () => EmailPasswordComponentOverrideMap["EmailPasswordSignUpForm_Override"];
+export declare const PasswordlessEmailForm: () => PasswordlessComponentOverrideMap["PasswordlessEmailForm_Override"];
+export declare const PasswordlessPhoneForm: () => PasswordlessComponentOverrideMap["PasswordlessPhoneForm_Override"];
+export declare const PasswordlessEmailOrPhoneForm: () => PasswordlessComponentOverrideMap["PasswordlessEmailOrPhoneForm_Override"];
+export declare const PasswordlessUserInputCodeForm: () => PasswordlessComponentOverrideMap["PasswordlessUserInputCodeForm_Override"];
+export declare const TOTPCodeForm: () => TotpComponentOverrideMap["TOTPCodeForm_Override"];

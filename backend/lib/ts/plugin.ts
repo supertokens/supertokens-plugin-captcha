@@ -1,7 +1,7 @@
 import { SuperTokensPlugin } from "supertokens-node/types";
 import { PLUGIN_ID, PLUGIN_SDK_VERSION, setPluginConfig } from "./config";
 import { SuperTokensPluginCaptchaConfig } from "./types";
-import { CaptchaValidators, SupportedCaptchaTypes } from "./captcha";
+import { validateCaptcha } from "./captcha";
 
 export const init = (
   config: SuperTokensPluginCaptchaConfig
@@ -18,62 +18,228 @@ export const init = (
           }
           return {
             ...originalImplementation,
-            signInPOST: async (input) => {
+            signUpPOST: async (input) => {
+              if (config.shouldValidate) {
+                const validateResult = config.shouldValidate(
+                  "signUpPOST",
+                  input
+                );
+                let shouldValidate = validateResult;
+                if (validateResult instanceof Promise) {
+                  shouldValidate = await validateResult;
+                }
+                if (!shouldValidate) {
+                  return originalImplementation.signUpPOST!(input);
+                }
+              }
+
               const body = await input.options.req.getJSONBody();
-              const captcha = "captcha" in body ? body.captcha : null;
-              const type = "captchaType" in body ? body.captchaType : null;
-
-              if (
-                config.shouldValidate &&
-                !config.shouldValidate({
-                  recipe: "emailpassword",
-                  action: "signInPOST",
-                  input,
-                })
-              ) {
-                return originalImplementation.signInPOST!(input);
-              }
-
-              if (!captcha) {
-                return {
-                  status: "GENERAL_ERROR",
-                  message: 'The "captcha" field is required',
-                };
-              }
-
-              if (!type) {
-                return {
-                  status: "GENERAL_ERROR",
-                  message: 'The "captchaType" field is required',
-                };
-              }
-
-              if (type !== config.type) {
-                return {
-                  status: "GENERAL_ERROR",
-                  message: `Invalid captcha type. Expected ${config.type} but got ${type}`,
-                };
-              }
-
-              const validator = CaptchaValidators[config.type];
-              if (!validator) {
-                return {
-                  status: "GENERAL_ERROR",
-                  message: `Unsupported captcha type: ${
-                    config.type
-                  }. Must be one of ${SupportedCaptchaTypes.join(", ")}`,
-                };
-              }
-
               try {
-                await validator(captcha);
-                return originalImplementation.signInPOST!(input);
+                await validateCaptcha(body);
               } catch (e) {
                 return {
                   status: "GENERAL_ERROR",
                   message: "CAPTCHA verification failed",
                 };
               }
+              return originalImplementation.signUpPOST!(input);
+            },
+            passwordResetPOST: async (input) => {
+              if (config.shouldValidate) {
+                const validateResult = config.shouldValidate(
+                  "passwordResetPOST",
+                  input
+                );
+                let shouldValidate = validateResult;
+                if (validateResult instanceof Promise) {
+                  shouldValidate = await validateResult;
+                }
+                if (!shouldValidate) {
+                  return originalImplementation.passwordResetPOST!(input);
+                }
+              }
+              const body = await input.options.req.getJSONBody();
+              try {
+                await validateCaptcha(body);
+              } catch (e) {
+                return {
+                  status: "GENERAL_ERROR",
+                  message: "CAPTCHA verification failed",
+                };
+              }
+              return originalImplementation.passwordResetPOST!(input);
+            },
+            generatePasswordResetTokenPOST: async (input) => {
+              if (config.shouldValidate) {
+                const validateResult = config.shouldValidate(
+                  "generatePasswordResetTokenPOST",
+                  input
+                );
+                let shouldValidate = validateResult;
+                if (validateResult instanceof Promise) {
+                  shouldValidate = await validateResult;
+                }
+                if (!shouldValidate) {
+                  return originalImplementation.generatePasswordResetTokenPOST!(
+                    input
+                  );
+                }
+              }
+              const body = await input.options.req.getJSONBody();
+              try {
+                await validateCaptcha(body);
+              } catch (e) {
+                return {
+                  status: "GENERAL_ERROR",
+                  message: "CAPTCHA verification failed",
+                };
+              }
+              return originalImplementation.generatePasswordResetTokenPOST!(
+                input
+              );
+            },
+            signInPOST: async (input) => {
+              if (config.shouldValidate) {
+                const validateResult = config.shouldValidate(
+                  "signInPOST",
+                  input
+                );
+                let shouldValidate = validateResult;
+                if (validateResult instanceof Promise) {
+                  shouldValidate = await validateResult;
+                }
+                if (!shouldValidate) {
+                  return originalImplementation.signInPOST!(input);
+                }
+              }
+
+              const body = await input.options.req.getJSONBody();
+              try {
+                await validateCaptcha(body);
+              } catch (e) {
+                return {
+                  status: "GENERAL_ERROR",
+                  message: "CAPTCHA verification failed",
+                };
+              }
+              return originalImplementation.signInPOST!(input);
+            },
+          };
+        },
+      },
+      passwordless: {
+        apis: (originalImplementation) => {
+          return {
+            ...originalImplementation,
+            consumeCodePOST: async (input) => {
+              if (config.shouldValidate) {
+                const validateResult = config.shouldValidate(
+                  "consumeCodePOST",
+                  input
+                );
+                let shouldValidate = validateResult;
+                if (validateResult instanceof Promise) {
+                  shouldValidate = await validateResult;
+                }
+                if (!shouldValidate) {
+                  return originalImplementation.consumeCodePOST!(input);
+                }
+              }
+
+              const body = await input.options.req.getJSONBody();
+              try {
+                await validateCaptcha(body);
+              } catch (e) {
+                return {
+                  status: "GENERAL_ERROR",
+                  message: "CAPTCHA verification failed",
+                };
+              }
+              return originalImplementation.consumeCodePOST!(input);
+            },
+            createCodePOST: async (input) => {
+              if (config.shouldValidate) {
+                const validateResult = config.shouldValidate(
+                  "createCodePOST",
+                  input
+                );
+                let shouldValidate = validateResult;
+                if (validateResult instanceof Promise) {
+                  shouldValidate = await validateResult;
+                }
+                if (!shouldValidate) {
+                  return originalImplementation.createCodePOST!(input);
+                }
+              }
+
+              const body = await input.options.req.getJSONBody();
+              try {
+                await validateCaptcha(body);
+              } catch (e) {
+                return {
+                  status: "GENERAL_ERROR",
+                  message: "CAPTCHA verification failed",
+                };
+              }
+              return originalImplementation.createCodePOST!(input);
+            },
+            resendCodePOST: async (input) => {
+              if (config.shouldValidate) {
+                const validateResult = config.shouldValidate(
+                  "resendCodePOST",
+                  input
+                );
+                let shouldValidate = validateResult;
+                if (validateResult instanceof Promise) {
+                  shouldValidate = await validateResult;
+                }
+                if (!shouldValidate) {
+                  return originalImplementation.resendCodePOST!(input);
+                }
+              }
+              const body = await input.options.req.getJSONBody();
+              try {
+                await validateCaptcha(body);
+              } catch (e) {
+                return {
+                  status: "GENERAL_ERROR",
+                  message: "CAPTCHA verification failed",
+                };
+              }
+              return originalImplementation.resendCodePOST!(input);
+            },
+          };
+        },
+      },
+      totp: {
+        apis: (originalImplementation) => {
+          return {
+            ...originalImplementation,
+            verifyTOTPPOST: async (input) => {
+              if (config.shouldValidate) {
+                const validateResult = config.shouldValidate(
+                  "verifyTOTPPOST",
+                  input
+                );
+                let shouldValidate = validateResult;
+                if (validateResult instanceof Promise) {
+                  shouldValidate = await validateResult;
+                }
+                if (!shouldValidate) {
+                  return originalImplementation.verifyTOTPPOST!(input);
+                }
+              }
+
+              const body = await input.options.req.getJSONBody();
+              try {
+                await validateCaptcha(body);
+              } catch (e) {
+                return {
+                  status: "GENERAL_ERROR",
+                  message: "CAPTCHA verification failed",
+                };
+              }
+              return originalImplementation.verifyTOTPPOST!(input);
             },
           };
         },
