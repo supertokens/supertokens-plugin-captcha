@@ -31,7 +31,7 @@ export type ReCAPTCHAv3Config = {
    */
   sitekey: string;
   /**
-   * the name of the action. Actions may only contain alphanumeric characters and slashes, and must not be user-specific.
+   * The name of the action. Actions may only contain alphanumeric characters and slashes, and must not be user-specific.
    */
   action?: string;
 };
@@ -53,7 +53,10 @@ type CaptchaConfig =
 
 export type EmailPasswordCaptchaPreAndPostAPIHookActions = Extract<
   EmailPasswordPreAndPostAPIHookAction,
-  "EMAIL_PASSWORD_SIGN_UP" | "EMAIL_PASSWORD_SIGN_IN" | "SUBMIT_NEW_PASSWORD"
+  | "EMAIL_PASSWORD_SIGN_UP"
+  | "EMAIL_PASSWORD_SIGN_IN"
+  | "SUBMIT_NEW_PASSWORD"
+  | "SEND_RESET_PASSWORD_EMAIL"
 >;
 
 export function isEmailPasswordCaptchaPreAndPostAPIHookAction(
@@ -62,6 +65,7 @@ export function isEmailPasswordCaptchaPreAndPostAPIHookAction(
   return (
     action === "EMAIL_PASSWORD_SIGN_UP" ||
     action === "EMAIL_PASSWORD_SIGN_IN" ||
+    action === "SEND_RESET_PASSWORD_EMAIL" ||
     action === "SUBMIT_NEW_PASSWORD"
   );
 }
