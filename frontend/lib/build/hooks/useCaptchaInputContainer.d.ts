@@ -1,3 +1,0 @@
-export declare function useCaptchaInputContainer(): import("react").ForwardRefExoticComponent<import("react").HTMLAttributes<HTMLDivElement> & import("react").RefAttributes<HTMLDivElement>> | import("react").ForwardRefExoticComponent<{
-    form: "EmailPasswordSignInForm" | "EmailPasswordSignUpForm" | "EmailPasswordResetPasswordEmail" | "EmailPasswordSubmitNewPassword" | "PasswordlessEmailForm" | "PasswordlessPhoneForm" | "PasswordlessEmailOrPhoneForm" | "PasswordlessEPComboEmailForm" | "PasswordlessEPComboEmailOrPhoneForm" | "PasswordlessUserInputForm" | "TOTPCodeForm";
-} & import("react").HTMLAttributes<HTMLDivElement> & import("react").RefAttributes<HTMLDivElement>>;
