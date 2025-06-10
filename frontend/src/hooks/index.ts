@@ -1,3 +1,2 @@
-export * from "./useCaptcha";
-export * from "./useCaptchaInputContainer";
-export * from "./useCaptchaInputContainerId";
+export * from './useCaptcha';
+export * from './useCaptchaInputContainer';

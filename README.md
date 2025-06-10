@@ -16,12 +16,12 @@ npm install supertokens-plugin-captcha
 Initialize the plugin in your SuperTokens backend configuration:
 
 ```typescript
-import SuperTokens from "supertokens-node";
-import CaptchaPlugin from "supertokens-plugin-captcha/backend";
+import SuperTokens from 'supertokens-node';
+import CaptchaPlugin from 'supertokens-plugin-captcha/backend';
 
 SuperTokens.init({
   supertokens: {
-    connectionURI: "...",
+    connectionURI: '...',
   },
   appInfo: {
     // your app info
@@ -31,9 +31,9 @@ SuperTokens.init({
   ],
   plugins: [
     CaptchaPlugin.init({
-      type: "reCAPTCHAv3", // or "reCAPTCHAv2" or "turnstile"
+      type: 'reCAPTCHAv3', // or "reCAPTCHAv2" or "turnstile"
       captcha: {
-        secretKey: "your-secret-key",
+        secretKey: 'your-secret-key',
       },
     }),
   ],
@@ -45,8 +45,8 @@ SuperTokens.init({
 Initialize the plugin in your SuperTokens frontend configuration:
 
 ```typescript
-import SuperTokens from "supertokens-auth-react";
-import CaptchaPlugin from "supertokens-plugin-captcha/frontend";
+import SuperTokens from 'supertokens-auth-react';
+import CaptchaPlugin from 'supertokens-plugin-captcha/frontend';
 
 SuperTokens.init({
   appInfo: {
@@ -57,9 +57,9 @@ SuperTokens.init({
   ],
   plugins: [
     CaptchaPlugin.init({
-      type: "reCAPTCHAv3", // or "reCAPTCHAv2" or "turnstile"
+      type: 'reCAPTCHAv3', // or "reCAPTCHAv2" or "turnstile"
       captcha: {
-        sitekey: "your-site-key",
+        sitekey: 'your-site-key',
         // Additional configuration based on the captcha provider
       },
     }),
@@ -80,7 +80,6 @@ The plugin automatically protects these authentication flows:
 | `Passwordless`  | Generate verification code | `PasswordlessEmailForm` and `PasswordlessPhoneForm` and `PasswordlessEmailOrPhoneForm` | `PASSWORDLESS_CREATE_CODE`  | `createCodePOST`                 |
 | `Passwordless`  | Verify code and sign in    | `PasswordlessUserInputForm`                                                            | `PASSWORDLESS_CONSUME_CODE` | `consumeCodePOST`                |
 | `Passwordless`  | Resend verification code   | N/A                                                                                    | `PASSWORDLESS_RESEND_CODE`  | `resendCodePOST`                 |
-| `TOTP`          | Verify TOTP code           | `TOTPCodeForm`                                                                         | `VERIFY_CODE`               | `verifyTOTPPOST`                 |
 
 ## Customization
 
@@ -89,18 +88,18 @@ The plugin automatically protects these authentication flows:
 Control when CAPTCHA validation occurs using the `shouldValidate` function:
 
 ```typescript
-import { ShouldValidate } from "supertokens-plugin-captcha/backend";
+import { ShouldValidate } from 'supertokens-plugin-captcha/backend';
 
 const shouldValidate: ShouldValidate = (api, input) => {
   // Only require CAPTCHA for sign up
-  if (api === "signUpPOST") {
+  if (api === 'signUpPOST') {
     return true;
   }
 
   // Check request headers for suspicious activity
-  if (api === "signInPOST") {
-    const userAgent = input.options.req.getHeaderValue("user-agent");
-    return !userAgent || userAgent.includes("bot");
+  if (api === 'signInPOST') {
+    const userAgent = input.options.req.getHeaderValue('user-agent');
+    return !userAgent || userAgent.includes('bot');
   }
 
   return false;
@@ -112,31 +111,30 @@ const shouldValidate: ShouldValidate = (api, input) => {
 Create a custom component to control CAPTCHA rendering:
 
 ```typescript
-import { forwardRef, useCallback, useEffect } from "react";
+import { forwardRef, useCallback, useEffect } from 'react';
 import {
   CaptchInputContainerProps,
   captchaStore,
   useCaptchaInputContainerId,
-} from "supertokens-plugin-captcha/frontend";
+} from 'supertokens-plugin-captcha/frontend';
 
 const CustomCaptchaContainer = forwardRef<
   HTMLDivElement,
   CaptchInputContainerProps
 >((props, ref) => {
   const { form, ...rest } = props;
-  const containerId = useCaptchaInputContainerId();
-
-  const loadAndRenderCaptcha = useCallback(async () => {
-    await captchaStore.load();
-    await captchaStore.render(); // No effect for reCAPTCHA v3
-  }, []);
+  const { loadAndRender, containerId } = useCaptcha();
 
   useEffect(() => {
-    // Only show CAPTCHA on sign up form
-    if (form === "EmailPasswordSignUpForm") {
-      loadAndRenderCaptcha();
+    // Captcha will apply/render only for the EmailPasswordSignUpForm
+    // and the EmailPasswordSignInForm
+    if (
+      form === 'EmailPasswordSignUpForm' ||
+      form === 'EmailPasswordResetPasswordEmail'
+    ) {
+      loadAndRender();
     }
-  }, [form, loadAndRenderCaptcha]);
+  }, [form]);
 
   return (
     <div ref={ref} id={containerId} className="captcha-container" {...rest} />
@@ -151,16 +149,16 @@ const CustomCaptchaContainer = forwardRef<
 Monitor CAPTCHA state in your components:
 
 ```typescript
-import { useCaptcha } from "supertokens-plugin-captcha/frontend";
+import { useCaptcha } from 'supertokens-plugin-captcha/frontend';
 
 function MyComponent() {
   const captcha = useCaptcha();
 
-  if (captcha.state === "loading") {
+  if (captcha.state === 'loading') {
     return <div>Loading CAPTCHA...</div>;
   }
 
-  if (captcha.state === "error") {
+  if (captcha.state === 'error') {
     return <div>Error: {captcha.error}</div>;
   }
 
