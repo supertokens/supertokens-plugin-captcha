@@ -1,18 +1,18 @@
-import { SuperTokensPlugin } from "supertokens-auth-react/lib/build/types";
-import { PLUGIN_ID } from "./constants";
-import { ComponentOverrides } from "./components";
-import { captcha } from "./captcha";
-import { SuperTokensPluginCaptchaConfig } from "./types";
-import { setPluginConfig, validatePublicConfig, enableLogging } from "./config";
+import { SuperTokensPlugin } from 'supertokens-auth-react/lib/build/types';
+import { PLUGIN_ID } from './constants';
+import { ComponentOverrides } from './components';
+import { captcha } from './captcha';
+import { SuperTokensPluginCaptchaConfig } from './types';
+import { setPluginConfig, validatePublicConfig, enableLogging } from './config';
 
 export const init = (
-  config: SuperTokensPluginCaptchaConfig
+  config: SuperTokensPluginCaptchaConfig,
 ): SuperTokensPlugin => {
   setPluginConfig(config);
   return {
     id: PLUGIN_ID,
     init: (config) => {
-      if(config.enableDebugLogs) enableLogging();
+      if (config.enableDebugLogs) enableLogging();
       validatePublicConfig(config);
     },
     overrideMap: {
@@ -24,8 +24,14 @@ export const init = (
           };
         },
         components: {
-          EmailPasswordSignInForm_Override: ComponentOverrides.EmailPasswordSignInForm(),
-          EmailPasswordSignUpForm_Override: ComponentOverrides.EmailPasswordSignUpForm(),
+          EmailPasswordSignInForm_Override:
+            ComponentOverrides.EmailPasswordSignInForm(),
+          EmailPasswordSignUpForm_Override:
+            ComponentOverrides.EmailPasswordSignUpForm(),
+          EmailPasswordResetPasswordEmail_Override:
+            ComponentOverrides.EmailPasswordResetPasswordEmail(),
+          EmailPasswordSubmitNewPassword_Override:
+            ComponentOverrides.EmailPasswordSubmitNewPassword(),
         },
       },
       passwordless: {
@@ -36,10 +42,18 @@ export const init = (
           };
         },
         components: {
-          PasswordlessEmailForm_Override: ComponentOverrides.PasswordlessEmailForm(),
-          PasswordlessPhoneForm_Override: ComponentOverrides.PasswordlessPhoneForm(),
-          PasswordlessEmailOrPhoneForm_Override: ComponentOverrides.PasswordlessEmailOrPhoneForm(),
-          PasswordlessUserInputCodeForm_Override: ComponentOverrides.PasswordlessUserInputCodeForm(),
+          PasswordlessEmailForm_Override:
+            ComponentOverrides.PasswordlessEmailForm(),
+          PasswordlessPhoneForm_Override:
+            ComponentOverrides.PasswordlessPhoneForm(),
+          PasswordlessEmailOrPhoneForm_Override:
+            ComponentOverrides.PasswordlessEmailOrPhoneForm(),
+          PasswordlessUserInputCodeForm_Override:
+            ComponentOverrides.PasswordlessUserInputCodeForm(),
+          PasswordlessEPComboEmailForm_Override:
+            ComponentOverrides.PasswordlessEPComboEmailForm(),
+          PasswordlessEPComboEmailOrPhoneForm_Override:
+            ComponentOverrides.PasswordlessEPComboEmailOrPhoneForm(),
         },
       },
     },

@@ -55,8 +55,8 @@
   },
   "license": "Apache-2.0",
   "dependencies": {
-    "supertokens-auth-react": "github:supertokens/supertokens-auth-react#feat/plugin/export-init",
-    "supertokens-node": "github:supertokens/supertokens-node#feat/plugin/export-init"
+    "supertokens-auth-react": "github:supertokens/supertokens-auth-react#improv/extend-components",
+    "supertokens-node": "github:supertokens/supertokens-node#feat/plugin/recursive-dependencies"
   },
   "peerDependencies": {
     "react": "^18.3.1",

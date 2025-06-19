@@ -30,15 +30,15 @@ export function useCaptcha() {
 }
 
 type CaptchaState = {
-  error: string | null;
-  token: string | null;
+  error: string | undefined;
+  token: string | undefined;
   isLoading: boolean;
   isRendering: boolean;
 };
 
 const DefaultCaptchaState: CaptchaState = {
-  error: null,
-  token: null,
+  error: undefined,
+  token: undefined,
   isLoading: false,
   isRendering: false,
 };
@@ -83,7 +83,7 @@ class CaptchaStore {
       this.state = { ...this.state, isLoading: true };
       this.notifyListeners();
       await this.captcha.load();
-      this.state = { ...this.state, isLoading: false, error: null };
+      this.state = { ...this.state, isLoading: false, error: undefined };
       this.notifyListeners();
     } catch (err) {
       logDebugMessage(`CaptchaStore load error - ${getErrorMessage(err)}`);
@@ -109,7 +109,12 @@ class CaptchaStore {
       this.notifyListeners();
       const onSubmit = (token: string) => {
         logDebugMessage(`Captcha token received`);
-        this.state = { ...this.state, isRendering: false, error: null, token };
+        this.state = {
+          ...this.state,
+          isRendering: false,
+          error: undefined,
+          token,
+        };
         this.notifyListeners();
       };
       const onError = (error: Error) => {
