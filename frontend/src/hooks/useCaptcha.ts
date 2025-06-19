@@ -1,9 +1,9 @@
-import { useCallback, useMemo, useSyncExternalStore } from 'react';
+import { useCallback, useEffect, useMemo, useSyncExternalStore } from 'react';
 import { Captcha, captcha } from '../captcha';
 import { getPluginConfig, logDebugMessage } from '../config';
 import { CAPTCHA_INPUT_CONTAINER_ID } from '../constants';
 
-export function useCaptcha() {
+export function useCaptcha(onError?: (error: string) => void) {
   const captchaInputContainerId = useMemo(() => {
     const config = getPluginConfig();
     return config.inputContainerId || CAPTCHA_INPUT_CONTAINER_ID;
@@ -15,10 +15,18 @@ export function useCaptcha() {
     () => DefaultCaptchaState
   );
 
+  const { error } = captchaState;
+
   const loadAndRenderCaptcha = useCallback(async (onRender?: () => void) => {
     await captchaStore.load();
     await captchaStore.render();
   }, []);
+
+  useEffect(() => {
+    if (error && onError) {
+      onError(error);
+    }
+  }, [error, onError]);
 
   return {
     state: captchaState,

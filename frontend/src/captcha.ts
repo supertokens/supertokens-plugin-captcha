@@ -19,6 +19,8 @@ export class Captcha {
   public state: 'uninitialised' | 'initialised' | 'loaded' | 'rendered' =
     'uninitialised';
   private config: SuperTokensPluginCaptchaConfig | null = null;
+  private onRenderError: ((error: string) => void) | null = null;
+  private onTokenSubmit: ((token: string) => void) | null = null;
 
   init(config: SuperTokensPluginCaptchaConfig) {
     if (this.state !== 'uninitialised') {
@@ -104,27 +106,11 @@ export class Captcha {
     this.state = 'rendered';
   }
 
-  preAPIHook = async (
-    context:
-      | RecipePreAPIHookContext<EmailPasswordPreAndPostAPIHookAction>
-      | RecipePreAPIHookContext<PasswordlessPreAndPostAPIHookAction>
-  ) => {
-    const { action } = context;
-    logDebugMessage(`PreAPIHook called`);
-
+  async getToken(): Promise<string> {
     if (this.state === 'uninitialised') {
       logDebugMessage('Captcha was not initialised, skipping');
-      return context;
+      return '';
     }
-
-    if (
-      !isEmailPasswordCaptchaPreAndPostAPIHookAction(action) &&
-      !isPasswordlessCaptchaPreAndPostAPIHookAction(action)
-    ) {
-      logDebugMessage(`Action does not have captcha support - ${action}`);
-      return context;
-    }
-
     if (this.state !== 'loaded' && this.state !== 'rendered') {
       logDebugMessage(`Invalid captcha state for preAPIHook - ${this.state}`);
       throw new Error(`Invalid captcha state: ${this.state}`);
@@ -136,31 +122,16 @@ export class Captcha {
     if (!this.config) {
       throw new Error('Captcha config is not initialised');
     }
-
     if (this.state !== 'rendered' && this.provider.render) {
       logDebugMessage('Rendering captcha before token retrieval');
-      await new Promise<string>((resolve, reject) => {
+      const token = await new Promise<string>((resolve, reject) => {
         this.render(resolve, reject);
       });
+      return token;
     }
 
-    logDebugMessage('Getting the captcha token');
-    const token = await this.provider.getToken();
-    let payload: Record<string, any> & {
-      captcha: string | null;
-      captchaType: 'reCAPTCHAv3' | 'reCAPTCHAv2' | 'turnstile';
-    };
-    try {
-      payload = JSON.parse(context.requestInit.body as string);
-    } catch (e) {
-      throw new Error('Error setting CAPTCHA token');
-    }
-
-    payload.captcha = token;
-    payload.captchaType = this.config.type;
-    context.requestInit.body = JSON.stringify(payload);
-    return context;
-  };
+    return await this.provider.getToken();
+  }
 }
 
 export class ReCAPTCHAv2Provider implements CaptchaProvider {

@@ -75,7 +75,8 @@ export const PasswordlessEmailForm = (): PasswordlessComponentOverrideMap['Passw
 export const PasswordlessPhoneForm = (): PasswordlessComponentOverrideMap['PasswordlessPhoneForm_Override'] => {
   return ({ DefaultComponent, ...props }) => {
     const CaptchaContainer = useCaptchaInputContainer();
-    const { state } = useCaptcha();
+    const { state } = useCaptcha(props.onError);
+    console.log(state);
     return (
       <DefaultComponent
         {...props}
@@ -130,6 +131,7 @@ export const PasswordlessEPComboEmailOrPhoneForm = (): PasswordlessComponentOver
 
 export const PasswordlessUserInputCodeForm = (): PasswordlessComponentOverrideMap['PasswordlessUserInputCodeForm_Override'] => {
   return ({ DefaultComponent, ...props }) => {
+    console.log(props);
     const CaptchaContainer = useCaptchaInputContainer();
     const { state } = useCaptcha();
     return (
