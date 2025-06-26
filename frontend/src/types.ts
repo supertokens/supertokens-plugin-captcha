@@ -92,7 +92,7 @@ export type SuperTokensPluginCaptchaConfig = CaptchaConfig & {
   InputContainer?: React.ForwardRefExoticComponent<
     React.HTMLAttributes<HTMLDivElement> & React.RefAttributes<HTMLDivElement>
   >;
-  inputContainerId?: string;
+  inputContainerId?: string | (() => Promise<string>);
 };
 
 export type CaptchInputContainerProps = {

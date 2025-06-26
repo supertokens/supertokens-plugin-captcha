@@ -1,4 +1,4 @@
-import { forwardRef, useEffect } from 'react';
+import { forwardRef, useCallback, useEffect } from 'react';
 import { useCaptcha } from '../hooks';
 import { CaptchInputContainerProps } from '../types';
 
@@ -7,11 +7,18 @@ export const CaptchaInputContainer = forwardRef<
   CaptchInputContainerProps
 >((props, ref) => {
   const { form, ...rest } = props;
-  const { loadAndRender, containerId } = useCaptcha();
+  const { render, load, containerId } = useCaptcha();
+
+  const loadAndRender = useCallback(async () => {
+    await load();
+    if (form !== 'PasswordlessUserInputForm') {
+      render();
+    }
+  }, []);
 
   useEffect(() => {
     loadAndRender();
-  }, []);
+  }, [form]);
 
   return (
     <div

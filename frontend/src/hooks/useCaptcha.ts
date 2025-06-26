@@ -16,12 +16,6 @@ export function useCaptcha(onError?: (error: string) => void) {
   );
 
   const { error } = captchaState;
-
-  const loadAndRenderCaptcha = useCallback(async (onRender?: () => void) => {
-    await captchaStore.load();
-    await captchaStore.render();
-  }, []);
-
   useEffect(() => {
     if (error && onError) {
       onError(error);
@@ -32,7 +26,6 @@ export function useCaptcha(onError?: (error: string) => void) {
     state: captchaState,
     load: captchaStore.load,
     render: captchaStore.render,
-    loadAndRender: loadAndRenderCaptcha,
     containerId: captchaInputContainerId,
   };
 }
@@ -98,7 +91,7 @@ class CaptchaStore {
     return () => this.listeners.delete(listener);
   };
 
-  async load() {
+  load = async () => {
     if (this.state.isLoading || this.state.isRendering) {
       logDebugMessage(
         `CaptchaStore load skipped: isLoading=${this.state.isLoading}, isRendering=${this.state.isRendering}`
@@ -124,9 +117,9 @@ class CaptchaStore {
       this.notifyListeners();
     }
     return true;
-  }
+  };
 
-  async render() {
+  render = async () => {
     if (this.state.isRendering || this.state.isLoading) {
       logDebugMessage(
         `CaptchaStore render skipped - isRendering=${this.state.isRendering}, isLoading=${this.state.isLoading}`
@@ -164,7 +157,7 @@ class CaptchaStore {
       };
       this.notifyListeners();
     }
-  }
+  };
 
   private notifyListeners() {
     this.listeners.forEach((listener) => listener());
