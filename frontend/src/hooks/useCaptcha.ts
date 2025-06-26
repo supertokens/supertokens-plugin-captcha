@@ -65,6 +65,28 @@ class CaptchaStore {
     this.state = DefaultCaptchaState;
     this.captcha = captcha;
     this.listeners = new Set();
+    this.captcha.addEventListener('token-submitted', (token) => {
+      this.state = {
+        ...this.state,
+        error: undefined,
+        token,
+      };
+      this.notifyListeners();
+    });
+    this.captcha.addEventListener('render-failed', (error) => {
+      this.state = {
+        ...this.state,
+        error: getErrorMessage(error),
+      };
+      this.notifyListeners();
+    });
+    this.captcha.addEventListener('get-token-failed', (error) => {
+      this.state = {
+        ...this.state,
+        error: getErrorMessage(error),
+      };
+      this.notifyListeners();
+    });
   }
 
   getSnapshot = () => {

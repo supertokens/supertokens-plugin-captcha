@@ -1,7 +1,7 @@
-import { SuperTokensPlugin } from "supertokens-node/types";
-import { PLUGIN_ID, PLUGIN_SDK_VERSION, setPluginConfig } from "./config";
-import { SuperTokensPluginCaptchaConfig } from "./types";
-import { validateCaptcha } from "./captcha";
+import { SuperTokensPlugin } from 'supertokens-node/types';
+import { PLUGIN_ID, PLUGIN_SDK_VERSION, setPluginConfig } from './config';
+import { SuperTokensPluginCaptchaConfig } from './types';
+import { validateCaptcha } from './captcha';
 
 export const init = (
   config: SuperTokensPluginCaptchaConfig
@@ -21,7 +21,7 @@ export const init = (
             signUpPOST: async (input) => {
               if (config.shouldValidate) {
                 const validateResult = config.shouldValidate(
-                  "signUpPOST",
+                  'signUpPOST',
                   input
                 );
                 let shouldValidate = validateResult;
@@ -38,8 +38,8 @@ export const init = (
                 await validateCaptcha(body);
               } catch (e) {
                 return {
-                  status: "GENERAL_ERROR",
-                  message: "CAPTCHA verification failed",
+                  status: 'GENERAL_ERROR',
+                  message: 'CAPTCHA verification failed',
                 };
               }
               return originalImplementation.signUpPOST!(input);
@@ -47,7 +47,7 @@ export const init = (
             passwordResetPOST: async (input) => {
               if (config.shouldValidate) {
                 const validateResult = config.shouldValidate(
-                  "passwordResetPOST",
+                  'passwordResetPOST',
                   input
                 );
                 let shouldValidate = validateResult;
@@ -63,8 +63,8 @@ export const init = (
                 await validateCaptcha(body);
               } catch (e) {
                 return {
-                  status: "GENERAL_ERROR",
-                  message: "CAPTCHA verification failed",
+                  status: 'GENERAL_ERROR',
+                  message: 'CAPTCHA verification failed',
                 };
               }
               return originalImplementation.passwordResetPOST!(input);
@@ -72,7 +72,7 @@ export const init = (
             generatePasswordResetTokenPOST: async (input) => {
               if (config.shouldValidate) {
                 const validateResult = config.shouldValidate(
-                  "generatePasswordResetTokenPOST",
+                  'generatePasswordResetTokenPOST',
                   input
                 );
                 let shouldValidate = validateResult;
@@ -90,8 +90,8 @@ export const init = (
                 await validateCaptcha(body);
               } catch (e) {
                 return {
-                  status: "GENERAL_ERROR",
-                  message: "CAPTCHA verification failed",
+                  status: 'GENERAL_ERROR',
+                  message: 'CAPTCHA verification failed',
                 };
               }
               return originalImplementation.generatePasswordResetTokenPOST!(
@@ -101,7 +101,7 @@ export const init = (
             signInPOST: async (input) => {
               if (config.shouldValidate) {
                 const validateResult = config.shouldValidate(
-                  "signInPOST",
+                  'signInPOST',
                   input
                 );
                 let shouldValidate = validateResult;
@@ -118,8 +118,8 @@ export const init = (
                 await validateCaptcha(body);
               } catch (e) {
                 return {
-                  status: "GENERAL_ERROR",
-                  message: "CAPTCHA verification failed",
+                  status: 'GENERAL_ERROR',
+                  message: 'CAPTCHA verification failed',
                 };
               }
               return originalImplementation.signInPOST!(input);
@@ -134,7 +134,7 @@ export const init = (
             consumeCodePOST: async (input) => {
               if (config.shouldValidate) {
                 const validateResult = config.shouldValidate(
-                  "consumeCodePOST",
+                  'consumeCodePOST',
                   input
                 );
                 let shouldValidate = validateResult;
@@ -146,13 +146,18 @@ export const init = (
                 }
               }
 
+              // Skip captcha validation if magic link was used
+              if ('linkCode' in input) {
+                return originalImplementation.consumeCodePOST!(input);
+              }
+
               const body = await input.options.req.getJSONBody();
               try {
                 await validateCaptcha(body);
               } catch (e) {
                 return {
-                  status: "GENERAL_ERROR",
-                  message: "CAPTCHA verification failed",
+                  status: 'GENERAL_ERROR',
+                  message: 'CAPTCHA verification failed',
                 };
               }
               return originalImplementation.consumeCodePOST!(input);
@@ -160,7 +165,7 @@ export const init = (
             createCodePOST: async (input) => {
               if (config.shouldValidate) {
                 const validateResult = config.shouldValidate(
-                  "createCodePOST",
+                  'createCodePOST',
                   input
                 );
                 let shouldValidate = validateResult;
@@ -177,36 +182,11 @@ export const init = (
                 await validateCaptcha(body);
               } catch (e) {
                 return {
-                  status: "GENERAL_ERROR",
-                  message: "CAPTCHA verification failed",
+                  status: 'GENERAL_ERROR',
+                  message: 'CAPTCHA verification failed',
                 };
               }
               return originalImplementation.createCodePOST!(input);
-            },
-            resendCodePOST: async (input) => {
-              if (config.shouldValidate) {
-                const validateResult = config.shouldValidate(
-                  "resendCodePOST",
-                  input
-                );
-                let shouldValidate = validateResult;
-                if (validateResult instanceof Promise) {
-                  shouldValidate = await validateResult;
-                }
-                if (!shouldValidate) {
-                  return originalImplementation.resendCodePOST!(input);
-                }
-              }
-              const body = await input.options.req.getJSONBody();
-              try {
-                await validateCaptcha(body);
-              } catch (e) {
-                return {
-                  status: "GENERAL_ERROR",
-                  message: "CAPTCHA verification failed",
-                };
-              }
-              return originalImplementation.resendCodePOST!(input);
             },
           };
         },
@@ -214,4 +194,3 @@ export const init = (
     },
   };
 };
-

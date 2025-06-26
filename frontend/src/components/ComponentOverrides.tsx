@@ -19,7 +19,7 @@ export const EmailPasswordSignInForm = (): EmailPasswordComponentOverrideMap['Em
 export const EmailPasswordSignUpForm = (): EmailPasswordComponentOverrideMap['EmailPasswordSignUpForm_Override'] => {
   return ({ DefaultComponent, ...props }) => {
     const CaptchaContainer = useCaptchaInputContainer();
-    const { state } = useCaptcha();
+    const { state } = useCaptcha(props.onError);
     return (
       <DefaultComponent
         {...props}
@@ -33,7 +33,7 @@ export const EmailPasswordSignUpForm = (): EmailPasswordComponentOverrideMap['Em
 export const EmailPasswordResetPasswordEmail = (): EmailPasswordComponentOverrideMap['EmailPasswordResetPasswordEmail_Override'] => {
   return ({ DefaultComponent, ...props }) => {
     const CaptchaContainer = useCaptchaInputContainer();
-    const { state } = useCaptcha();
+    const { state } = useCaptcha(props.onError);
     return (
       <DefaultComponent
         {...props}
@@ -47,7 +47,7 @@ export const EmailPasswordResetPasswordEmail = (): EmailPasswordComponentOverrid
 export const EmailPasswordSubmitNewPassword = (): EmailPasswordComponentOverrideMap['EmailPasswordSubmitNewPassword_Override'] => {
   return ({ DefaultComponent, ...props }) => {
     const CaptchaContainer = useCaptchaInputContainer();
-    const { state } = useCaptcha();
+    const { state } = useCaptcha(props.onError);
     return (
       <DefaultComponent
         {...props}
@@ -61,7 +61,7 @@ export const EmailPasswordSubmitNewPassword = (): EmailPasswordComponentOverride
 export const PasswordlessEmailForm = (): PasswordlessComponentOverrideMap['PasswordlessEmailForm_Override'] => {
   return ({ DefaultComponent, ...props }) => {
     const CaptchaContainer = useCaptchaInputContainer();
-    const { state } = useCaptcha();
+    const { state } = useCaptcha(props.onError);
     return (
       <DefaultComponent
         {...props}
@@ -76,7 +76,6 @@ export const PasswordlessPhoneForm = (): PasswordlessComponentOverrideMap['Passw
   return ({ DefaultComponent, ...props }) => {
     const CaptchaContainer = useCaptchaInputContainer();
     const { state } = useCaptcha(props.onError);
-    console.log(state);
     return (
       <DefaultComponent
         {...props}
@@ -90,7 +89,7 @@ export const PasswordlessPhoneForm = (): PasswordlessComponentOverrideMap['Passw
 export const PasswordlessEmailOrPhoneForm = (): PasswordlessComponentOverrideMap['PasswordlessEmailOrPhoneForm_Override'] => {
   return ({ DefaultComponent, ...props }) => {
     const CaptchaContainer = useCaptchaInputContainer();
-    const { state } = useCaptcha();
+    const { state } = useCaptcha(props.onError);
     return (
       <DefaultComponent
         {...props}
@@ -104,7 +103,7 @@ export const PasswordlessEmailOrPhoneForm = (): PasswordlessComponentOverrideMap
 export const PasswordlessEPComboEmailForm = (): PasswordlessComponentOverrideMap['PasswordlessEPComboEmailForm_Override'] => {
   return ({ DefaultComponent, ...props }) => {
     const CaptchaContainer = useCaptchaInputContainer();
-    const { state } = useCaptcha();
+    const { state } = useCaptcha(props.onError);
     return (
       <DefaultComponent
         {...props}
@@ -118,7 +117,7 @@ export const PasswordlessEPComboEmailForm = (): PasswordlessComponentOverrideMap
 export const PasswordlessEPComboEmailOrPhoneForm = (): PasswordlessComponentOverrideMap['PasswordlessEPComboEmailOrPhoneForm_Override'] => {
   return ({ DefaultComponent, ...props }) => {
     const CaptchaContainer = useCaptchaInputContainer();
-    const { state } = useCaptcha();
+    const { state } = useCaptcha(props.onError);
     return (
       <DefaultComponent
         {...props}
@@ -131,9 +130,8 @@ export const PasswordlessEPComboEmailOrPhoneForm = (): PasswordlessComponentOver
 
 export const PasswordlessUserInputCodeForm = (): PasswordlessComponentOverrideMap['PasswordlessUserInputCodeForm_Override'] => {
   return ({ DefaultComponent, ...props }) => {
-    console.log(props);
     const CaptchaContainer = useCaptchaInputContainer();
-    const { state } = useCaptcha();
+    const { state } = useCaptcha(props.onError);
     return (
       <DefaultComponent
         {...props}

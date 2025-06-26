@@ -79,7 +79,6 @@ The plugin automatically protects these authentication flows:
 | `EmailPassword` | Password reset submission  | `EmailPasswordSubmitNewPassword`                                                       | `SUBMIT_NEW_PASSWORD`       | `passwordResetPOST`              |
 | `Passwordless`  | Generate verification code | `PasswordlessEmailForm` and `PasswordlessPhoneForm` and `PasswordlessEmailOrPhoneForm` | `PASSWORDLESS_CREATE_CODE`  | `createCodePOST`                 |
 | `Passwordless`  | Verify code and sign in    | `PasswordlessUserInputForm`                                                            | `PASSWORDLESS_CONSUME_CODE` | `consumeCodePOST`                |
-| `Passwordless`  | Resend verification code   | N/A                                                                                    | `PASSWORDLESS_RESEND_CODE`  | `resendCodePOST`                 |
 
 ## Customization
 
