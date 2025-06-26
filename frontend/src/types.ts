@@ -1,6 +1,7 @@
 /// <reference types="@types/cloudflare-turnstile" />
 /// <reference types="@types/grecaptcha" />
 
+import { RecipePreAPIHookContext } from 'supertokens-auth-react/lib/build/recipe/recipeModule/types';
 import { PreAndPostAPIHookAction as EmailPasswordPreAndPostAPIHookAction } from 'supertokens-auth-react/lib/build/recipe/emailpassword/types';
 import { PreAndPostAPIHookAction as PasswordlessPreAndPostAPIHookAction } from 'supertokens-auth-react/lib/build/recipe/passwordless/types';
 
@@ -87,12 +88,15 @@ export function isPasswordlessCaptchaPreAndPostAPIHookAction(
 }
 
 export type SuperTokensPluginCaptchaConfig = CaptchaConfig & {
-  // React component inside which the captcha input will render.
-  // The component should pass a reference that will be used in the captcha provider for rendering.
   InputContainer?: React.ForwardRefExoticComponent<
     React.HTMLAttributes<HTMLDivElement> & React.RefAttributes<HTMLDivElement>
   >;
   inputContainerId?: string | (() => Promise<string>);
+  shouldValidate?: (
+    contenxt:
+      | RecipePreAPIHookContext<EmailPasswordPreAndPostAPIHookAction>
+      | RecipePreAPIHookContext<PasswordlessPreAndPostAPIHookAction>
+  ) => boolean;
 };
 
 export type CaptchInputContainerProps = {

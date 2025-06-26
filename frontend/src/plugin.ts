@@ -69,12 +69,21 @@ async function preAPIHook(
     | RecipePreAPIHookContext<PasswordlessPreAndPostAPIHookAction>
 ) {
   const { action } = context;
+  const config = getPluginConfig();
   logDebugMessage(`PreAPIHook called`);
   if (
     !isEmailPasswordCaptchaPreAndPostAPIHookAction(action) &&
     !isPasswordlessCaptchaPreAndPostAPIHookAction(action)
   ) {
     logDebugMessage(`Action does not have captcha support - ${action}`);
+    return context;
+  }
+
+  const shouldDoCaptchaValidation = config.shouldValidate
+    ? config.shouldValidate
+    : shouldValidate;
+  if (!shouldDoCaptchaValidation(context)) {
+    logDebugMessage('Captcha validation skipped');
     return context;
   }
 
@@ -94,9 +103,17 @@ async function preAPIHook(
     throw new Error('Error setting CAPTCHA token');
   }
 
-  const config = getPluginConfig();
   payload.captcha = token;
   payload.captchaType = config.type;
   context.requestInit.body = JSON.stringify(payload);
   return context;
 }
+
+const shouldValidate: NonNullable<
+  SuperTokensPluginCaptchaConfig['shouldValidate']
+> = (context) => {
+  if (context.action === 'PASSWORDLESS_CONSUME_CODE') {
+    return false;
+  }
+  return true;
+};

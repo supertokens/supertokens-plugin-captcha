@@ -2,6 +2,7 @@ import { useCallback, useEffect, useMemo, useSyncExternalStore } from 'react';
 import { Captcha, captcha } from '../captcha';
 import { getPluginConfig, logDebugMessage } from '../config';
 import { CAPTCHA_INPUT_CONTAINER_ID } from '../constants';
+import { SuperTokensPluginCaptchaConfig } from '../types';
 
 export function useCaptcha(onError?: (error: string) => void) {
   const captchaInputContainerId = useMemo(() => {
@@ -91,7 +92,9 @@ class CaptchaStore {
     return () => this.listeners.delete(listener);
   };
 
-  load = async () => {
+  load = async (
+    configOverride: Partial<SuperTokensPluginCaptchaConfig> = {}
+  ) => {
     if (this.state.isLoading || this.state.isRendering) {
       logDebugMessage(
         `CaptchaStore load skipped: isLoading=${this.state.isLoading}, isRendering=${this.state.isRendering}`
@@ -101,7 +104,9 @@ class CaptchaStore {
 
     try {
       if (this.captcha.state === 'uninitialised') {
-        this.captcha.init(getPluginConfig());
+        const config = getPluginConfig();
+        // @ts-expect-error
+        this.captcha.init({ ...config, ...configOverride });
       }
       this.state = { ...this.state, isLoading: true };
       this.notifyListeners();
